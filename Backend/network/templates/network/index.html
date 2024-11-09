@@ -1,0 +1,97 @@
+{% extends "network/layout.html" %}
+{% load static %}
+
+{% block body %}
+<div class="container justify-content-center p-2 border">
+    <h1>All posts</h1>
+
+    {% if user.is_authenticated %}
+    <div class="container p-2 border">
+        <b>New Post</b>
+        <form action="{% url 'create_post' %}" method="POST">
+            {% csrf_token %}
+            <textarea class="form-control" placeholder="Type your post" name="content" id="content"></textarea>
+            <button type="submit" class="btn btn-primary mt-2">Post</button>
+        </form>
+    </div>
+    {% endif %}
+
+    {% for type in page_obj %}
+        <div class="container m-3 border">
+            <a href="{% url 'view_profile' type.post.poster.username %}">
+                <b>{{ type.post.poster.username }}</b>
+            </a>
+
+            {% if user.is_authenticated and type.post.poster == user %}
+            <div>
+                <a href="#" class="edit-button" data-id="{{ type.post.id }}">Edit</a>
+            </div>
+
+            <div class="edit-space" data-id="{{ type.post.id }}" style="display: none;">
+                <form>
+                    {% csrf_token %}
+                    <textarea class="text-space" data-id="{{ type.post.id }}"></textarea>
+                    <input type="submit" class="btn btn-primary" value="Save" />
+                </form>
+            </div>
+            {% endif %}
+
+            <div class="content-space" data-id="{{ type.post.id }}">{{ type.post.content }}</div>
+
+            <div>
+                <span>{{ type.post.time }}</span>
+            </div>
+
+            <!-- just display none the other to unlike -->
+            {% if type.is_liked %}
+                <div>
+                    <a href="#" class="unlike-button" data-id="{{ type.post.id }}">Unlike</a>
+                </div>  
+                <div>
+                    <a href="#" class="like-button" data-id="{{ type.post.id }}" style="display: none;">Like</a>
+                </div>  
+            {% else %}
+                <div>
+                    <a href="#" class="unlike-button" data-id="{{ type.post.id }}" style="display: none;"">Unlike</a>
+                </div>  
+                <div>
+                    <a href="#" class="like-button" data-id="{{ type.post.id }}">Like</a>
+                </div>  
+            {% endif %}
+
+            <div>
+                <span class="likes-count" data-id="{{ type.post.id }}">Likes: {{ type.post.likes.count }}</span>
+            </div>
+
+            
+        </div>
+    {% endfor %}
+
+    <div class="pagination">
+        <span class="step-links">
+            {% if page_obj.has_previous %}
+                <a href="?page=1">&laquo; first</a>
+                <a href="?page={{ page_obj.previous_page_number }}">previous</a>
+            {% endif %}
+
+            <span class="current">
+                Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}.
+            </span>
+
+            {% if page_obj.has_next %}
+                <a href="?page={{ page_obj.next_page_number }}">next</a>
+                <a href="?page={{ page_obj.paginator.num_pages }}">last &raquo;</a>
+            {% endif %}
+        </span>
+    </div>
+</div>
+{% endblock %}
+
+{% block script %}
+    <script>
+        const savePostUrl = "{% url 'save_post' %}";
+        const likePostUrl = "{% url 'like_post' %}";
+        const unlikePostUrl = "{% url 'unlike_post' %}";
+    </script>
+    <script src="{% static 'network/index.js' %}"></script>
+{% endblock %}
