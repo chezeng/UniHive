@@ -1,5 +1,7 @@
 
 from django.urls import path
+from django.conf import settings
+from django.conf.urls.static import static
 
 from . import views
 
@@ -22,3 +24,7 @@ urlpatterns = [
     path('mark_button', views.mark_button, name='mark_button'),
     path('unmark_button', views.unmark_button, name='unmark_button'),
 ]
+
+
+if settings.DEBUG:  # Only serve media files in development
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

@@ -72,6 +72,13 @@
                 
             {% endif %}
 
+            {% if type.post.picture %}
+                <!-- put in the picture.url instead of just picture -->
+                <img src="{{ type.post.picture.url }}" alt="Picture" style="max-width: 300px;">
+            {% else %}
+                
+            {% endif %}
+
             <div class="content-space" data-id="{{ type.post.id }}">{{ type.post.content }}</div>
 
             <div>
