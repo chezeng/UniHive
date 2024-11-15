@@ -59,6 +59,17 @@
                 </div>
             {% endif %}
 
+            {% else %}
+                {% if type.post.found %}
+                    <p>
+                        Status: Found
+                    </p>
+                {% else %}
+                    <p>
+                        Status: Not Found
+                    </p>
+                {% endif %}
+                
             {% endif %}
 
             <div class="content-space" data-id="{{ type.post.id }}">{{ type.post.content }}</div>
@@ -91,7 +102,6 @@
             <div>
                 <a href="{% url 'postpage' type.post.id %}">View post!</a>
             </div>
-            
         </div>
     {% endfor %}
 
