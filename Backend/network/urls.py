@@ -18,4 +18,5 @@ urlpatterns = [
     path('save_post', views.save_post, name='save_post'),
     path('like_post', views.like_post, name='like_post'),
     path('unlike_post', views.unlike_post, name='unlike_post'),
+    path('postpage/<int:post_id>',views.postpage,name='postpage'),
 ]

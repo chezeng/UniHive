@@ -283,4 +283,11 @@ def unlike_post(request):
             'status': 'error',
             'message': str(e)
         }, status=500)
+    
+def postpage(request, post_id):
+    post = Post.objects.get(id=post_id)
+    return render(request, 'network/postpage.html', {
+        'post' : post,
+        'post_id' : post_id
+    })
    

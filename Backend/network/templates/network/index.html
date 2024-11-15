@@ -63,6 +63,9 @@
                 <span class="likes-count" data-id="{{ type.post.id }}">Likes: {{ type.post.likes.count }}</span>
             </div>
 
+            <div>
+                <a href="{% url 'postpage' type.post.id %}">View post!</a>
+            </div>
             
         </div>
     {% endfor %}
