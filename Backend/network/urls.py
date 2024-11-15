@@ -19,4 +19,6 @@ urlpatterns = [
     path('like_post', views.like_post, name='like_post'),
     path('unlike_post', views.unlike_post, name='unlike_post'),
     path('postpage/<int:post_id>',views.postpage,name='postpage'),
+    path('mark_button', views.mark_button, name='mark_button'),
+    path('unmark_button', views.unmark_button, name='unmark_button'),
 ]

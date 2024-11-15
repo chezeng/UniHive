@@ -54,7 +54,6 @@ document.addEventListener("DOMContentLoaded", function() {
                     editSpace.style.display = 'none';
                     contentSpace.style.display = 'block';
                     
-                    alert(data.message);
                 } else {
                     alert(data.message || 'Error saving post');
                 }
@@ -100,7 +99,6 @@ document.addEventListener("DOMContentLoaded", function() {
                         unlikeButton.style.display = 'block';
                     }
 
-                    alert(data.message);
                 } else {
                     alert(data.message || 'Error saving post');
                 }
@@ -144,8 +142,6 @@ document.addEventListener("DOMContentLoaded", function() {
                         likeButton.style.display = 'block';
                         unlikeButton.style.display = 'none';
                     }
-
-                    alert(data.message);
                 } else {
                     alert(data.message || 'Error saving post');
                 }
@@ -154,5 +150,81 @@ document.addEventListener("DOMContentLoaded", function() {
                 alert('An error occurred while saving.');
             }
         });
+    });
+
+    document.querySelectorAll('.mark-button').forEach(button => {
+        button.addEventListener('click', async function(event) {
+            event.preventDefault();
+
+            const dataId = button.getAttribute('data-id');
+            const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+
+            try {
+                const response = await fetch(markButtonUrl, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': csrfToken,
+                    },
+                    body: JSON.stringify({
+                        post_id: dataId
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (data.status === 'success') {
+                    // do something
+                    const markButton = document.querySelector(`.mark-button[data-id="${dataId}"]`);
+                    const unmarkButton = document.querySelector(`.unmark-button[data-id="${dataId}"]`);
+
+                    markButton.style.display='none';
+                    unmarkButton.style.display='block';
+                } else {
+                    alert(data.message || 'Error saving post');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('An error occurred while saving.');
+            }
+        })
+    });
+
+    document.querySelectorAll('.unmark-button').forEach(button => {
+        button.addEventListener('click', async function(event) {
+            event.preventDefault();
+
+            const dataId = button.getAttribute('data-id');
+            const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+
+            try {
+                const response = await fetch(unmarkButtonUrl, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': csrfToken,
+                    },
+                    body: JSON.stringify({
+                        post_id: dataId
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (data.status === 'success') {
+                    // do something
+                    const markButton = document.querySelector(`.mark-button[data-id="${dataId}"]`);
+                    const unmarkButton = document.querySelector(`.unmark-button[data-id="${dataId}"]`);
+
+                    markButton.style.display='block';
+                    unmarkButton.style.display='none';
+                } else {
+                    alert(data.message || 'Error saving post');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('An error occurred while saving.');
+            }
+        })
     });
 });

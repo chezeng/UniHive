@@ -34,6 +34,31 @@
                     <input type="submit" class="btn btn-primary" value="Save" />
                 </form>
             </div>
+
+            {% if type.post.found %}
+                <div>
+                    <button class="mark-button" data-id="{{ type.post.id }}" style="display: none;">
+                        Mark found
+                    </button>
+                </div>
+                <div>
+                    <button class="unmark-button" data-id="{{ type.post.id }}" style="display: block;">
+                        Remove found mark
+                    </button>
+                </div>
+            {% else %}
+                <div>
+                    <button class="mark-button" data-id="{{ type.post.id }}" style="display: block;">
+                        Mark found
+                    </button>
+                </div>
+                <div>
+                    <button class="unmark-button" data-id="{{ type.post.id }}" style="display: none;">
+                        Remove found mark
+                    </button>
+                </div>
+            {% endif %}
+
             {% endif %}
 
             <div class="content-space" data-id="{{ type.post.id }}">{{ type.post.content }}</div>
@@ -95,6 +120,8 @@
         const savePostUrl = "{% url 'save_post' %}";
         const likePostUrl = "{% url 'like_post' %}";
         const unlikePostUrl = "{% url 'unlike_post' %}";
+        const markButtonUrl = "{% url 'mark_button' %}";
+        const unmarkButtonUrl = "{% url 'unmark_button' %}";
     </script>
     <script src="{% static 'network/index.js' %}"></script>
 {% endblock %}

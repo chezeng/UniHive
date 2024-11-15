@@ -291,3 +291,66 @@ def postpage(request, post_id):
         'post_id' : post_id
     })
    
+@require_http_methods(["POST"])
+def mark_button(request):        
+    try:
+        data = json.loads(request.body)
+        post_id = data.get('post_id')
+
+        try:
+            post = Post.objects.get(id=post_id)
+        except Post.DoesNotExist:
+            return JsonResponse({
+                'status': 'error',
+                'message': 'Post not found or you do not have permission to edit it.',
+            }, status=404)
+
+        post.found=True
+        post.save()
+
+        return JsonResponse({
+            'status': 'success',
+            'message': 'Post saved successfully.',
+        })
+    except json.JSONDecodeError:
+        return JsonResponse({
+            'status': 'error',
+            'message': 'Invalid JSON data.'
+        }, status=400)
+    except Exception as e:
+        return JsonResponse({
+            'status': 'error',
+            'message': str(e)
+        }, status=500)
+    
+@require_http_methods(["POST"])
+def unmark_button(request):        
+    try:
+        data = json.loads(request.body)
+        post_id = data.get('post_id')
+
+        try:
+            post = Post.objects.get(id=post_id)
+        except Post.DoesNotExist:
+            return JsonResponse({
+                'status': 'error',
+                'message': 'Post not found or you do not have permission to edit it.',
+            }, status=404)
+
+        post.found=False
+        post.save()
+
+        return JsonResponse({
+            'status': 'success',
+            'message': 'Post saved successfully.',
+        })
+    except json.JSONDecodeError:
+        return JsonResponse({
+            'status': 'error',
+            'message': 'Invalid JSON data.'
+        }, status=400)
+    except Exception as e:
+        return JsonResponse({
+            'status': 'error',
+            'message': str(e)
+        }, status=500)

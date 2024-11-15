@@ -9,6 +9,7 @@ class Post(models.Model):
     content = models.TextField()
     time = models.DateTimeField(auto_now_add=True)
     likes = models.ManyToManyField(User, blank=True, related_name="liked")
+    found = models.BooleanField(default=False)
 
 class Network(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
