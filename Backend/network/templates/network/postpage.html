@@ -1,7 +1,134 @@
 {% extends "network/layout.html" %}
 
+{% block script %}
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+    integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
+    crossorigin=""/>
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+    integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
+    crossorigin=""></script>
+{% endblock %}
+
 {% block body %}
+<div class="container justify-content-center p-2 border">
+    <h1>All posts</h1>
 
+    <div class="container m-3 border">
+        <a href="{% url 'view_profile' post.poster.username %}">
+            <b>{{ post.poster.username }}</b>
+        </a>
 
+        {% if user.is_authenticated and post.poster == user %}
+        <div>
+            <a href="#" class="edit-button" data-id="{{ post.id }}">Edit</a>
+        </div>
 
+        <div class="edit-space" data-id="{{ post.id }}" style="display: none;">
+            <form>
+                {% csrf_token %}
+                <textarea class="text-space" data-id="{{ post.id }}"></textarea>
+                <input type="submit" class="btn btn-primary" value="Save" />
+            </form>
+        </div>
+
+        {% if post.found %}
+            <div>
+                <button class="mark-button" data-id="{{ post.id }}" style="display: none;">
+                    Mark found
+                </button>
+            </div>
+            <div>
+                <button class="unmark-button" data-id="{{ post.id }}" style="display: block;">
+                    Remove found mark
+                </button>
+            </div>
+        {% else %}
+            <div>
+                <button class="mark-button" data-id="{{ post.id }}" style="display: block;">
+                    Mark found
+                </button>
+            </div>
+            <div>
+                <button class="unmark-button" data-id="{{ post.id }}" style="display: none;">
+                    Remove found mark
+                </button>
+            </div>
+        {% endif %}
+
+        {% else %}
+            {% if post.found %}
+                <p>
+                    Status: Found
+                </p>
+            {% else %}
+                <p>
+                    Status: Not Found
+                </p>
+            {% endif %}
+            
+        {% endif %}
+
+        {% if post.picture %}
+            <!-- put in the picture.url instead of just picture -->
+            <img src="{{ post.picture.url }}" alt="Picture" style="max-width: 300px;">
+        {% else %}
+            
+        {% endif %}
+
+        <div class="content-space" data-id="{{ post.id }}">{{ post.content }}</div>
+
+        <div>
+            <span>{{ post.time }}</span>
+        </div>
+
+        <!-- just display none the other to unlike -->
+        {% if is_liked %}
+            <div>
+                <a href="#" class="unlike-button" data-id="{{ post.id }}">Unlike</a>
+            </div>  
+            <div>
+                <a href="#" class="like-button" data-id="{{ post.id }}" style="display: none;">Like</a>
+            </div>  
+        {% else %}
+            <div>
+                <a href="#" class="unlike-button" data-id="{{ post.id }}" style="display: none;"">Unlike</a>
+            </div>  
+            <div>
+                <a href="#" class="like-button" data-id="{{ post.id }}">Like</a>
+            </div>  
+        {% endif %}
+
+        <div>
+            <span class="likes-count" data-id="{{ post.id }}">Likes: {{ post.likes.count }}</span>
+        </div>
+
+        <div id="map" style="height: 300px; width: 600px;"></div>
+
+        <script>
+            var x = {{ post.latitude }};
+            var y = {{ post.longitude }};
+            var map = L.map('map').setView([x,y ], 15);
+
+            L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                maxZoom: 19,
+                attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+            }).addTo(map);
+
+            fetch("{% url 'points' %}").then(response => response.json()).then(data => {
+                data.forEach(point => {
+                    var marker = L.marker([point.lat, point.lng]).addTo(map);
+
+                    marker.bindPopup(`
+                    <div>
+                        <h3>${point.description}</h3>
+                        <div>
+                            <a href="${point.url}" target="_blank">View post!</a>
+                        </div>
+                    `);
+                })
+                .catch(error => console.log('Error fetching points', error));
+            });
+        </script>
+    </div>
+</div>
 {% endblock %}
