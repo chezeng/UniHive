@@ -357,11 +357,12 @@ def unmark_button(request):
     
 def search(request):
     if request.method == "POST":
-        search_content = request.POST["content"]
+        search_content = request.POST["content"].upper()
         list = []
         all_post = Post.objects.all()
         for post in all_post:
-            if post.content.find(search_content) != -1:
+            P = post.content.upper()
+            if P.find(search_content) != -1:
                 list.append(post)
         return render(request, "network/search.html", {
             "posts" : list,

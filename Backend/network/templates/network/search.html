@@ -5,7 +5,7 @@
 <form action="{% url 'search' %}" method="POST">
     {% csrf_token %}
     <textarea name="content"></textarea>
-    <input type="submit" class="btn btn-primary" value="Save" />
+    <input type="submit" class="btn btn-primary" value="Search" />
 </form>
 
 {% if posts %}
