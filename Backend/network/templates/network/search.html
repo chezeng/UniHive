@@ -1,6 +1,92 @@
-{% extends 'network/layout.html'}
+{% extends 'network/layout.html' %}
 
 {% block body %}
 
+<form action="{% url 'search' %}" method="POST">
+    {% csrf_token %}
+    <textarea name="content"></textarea>
+    <input type="submit" class="btn btn-primary" value="Save" />
+</form>
+
+{% if posts %}
+    {% for post in posts %} 
+        <div class="container m-3 border">
+            <a href="{% url 'view_profile' post.poster.username %}">
+                <b>{{ post.poster.username }}</b>
+            </a>
+
+            {% if user.is_authenticated and post.poster == user %}
+            <div>
+                <a href="#" class="edit-button" data-id="{{ post.id }}">Edit</a>
+            </div>
+
+            <div class="edit-space" data-id="{{ post.id }}" style="display: none;">
+                <form>
+                    {% csrf_token %}
+                    <textarea class="text-space" data-id="{{ post.id }}"></textarea>
+                    <input type="submit" class="btn btn-primary" value="Save" />
+                </form>
+            </div>
+
+            {% if post.found %}
+                <div>
+                    <button class="mark-button" data-id="{{ post.id }}" style="display: none;">
+                        Mark found
+                    </button>
+                </div>
+                <div>
+                    <button class="unmark-button" data-id="{{ post.id }}" style="display: block;">
+                        Remove found mark
+                    </button>
+                </div>
+            {% else %}
+                <div>
+                    <button class="mark-button" data-id="{{ post.id }}" style="display: block;">
+                        Mark found
+                    </button>
+                </div>
+                <div>
+                    <button class="unmark-button" data-id="{{ post.id }}" style="display: none;">
+                        Remove found mark
+                    </button>
+                </div>
+            {% endif %}
+
+            {% else %}
+                {% if post.found %}
+                    <p>
+                        Status: Found
+                    </p>
+                {% else %}
+                    <p>
+                        Status: Not Found
+                    </p>
+                {% endif %}
+                
+            {% endif %}
+
+            {% if post.picture %}
+                <!-- put in the picture.url instead of just picture -->
+                <img src="{{ post.picture.url }}" alt="Picture" style="max-width: 300px;">
+            {% else %}
+                
+            {% endif %}
+
+            <div class="content-space" data-id="{{ post.id }}">{{ post.content }}</div>
+
+            <div>
+                <span>{{ post.time }}</span>
+            </div>
+
+            <div>
+                <span class="likes-count" data-id="{{ post.id }}">Likes: {{ post.likes.count }}</span>
+            </div>
+
+            <div>
+                <a href="{% url 'postpage' post.id %}">View post!</a>
+            </div>
+        </div>
+    {% endfor %}
+{% endif %}
 
 {% endblock %}
