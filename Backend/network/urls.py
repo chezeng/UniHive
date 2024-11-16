@@ -26,6 +26,7 @@ urlpatterns = [
     path('search', views.search, name='search'),
     path('maps',views.maps,name='maps'),
     path('points',views.points,name='points'),
+    path('chat', views.chat, name='chat'),
 ]
 
 

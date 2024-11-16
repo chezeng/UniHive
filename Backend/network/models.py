@@ -1,5 +1,6 @@
 from django.contrib.auth.models import AbstractUser
 from django.db import models
+from django.utils.timezone import now
 
 class User(AbstractUser):
     pass
@@ -21,5 +22,6 @@ class Network(models.Model):
 
 class Message(models.Model):
     text = models.TextField()
+    time = models.DateTimeField(default=now)
     sender = models.ForeignKey(User, on_delete=models.CASCADE, related_name="sent_message")
     receiver = models.ForeignKey(User, on_delete=models.CASCADE, related_name="received_message")

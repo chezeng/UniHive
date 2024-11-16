@@ -397,3 +397,21 @@ def points(request):
             point_list.append({"lat": post.latitude, "lng": post.longitude, "description":post.content, "id": post.id, "url": url})
 
     return JsonResponse(point_list, safe=False)
+
+@login_required
+def chat(request,username):  
+    sender = request.user
+    receiver = User.objects.get(username=username)
+    texts = []
+    for message in sender.sent_messages.all():
+        if message.receiver == receiver:
+            texts.append(message)
+    for message in sender.received_messages.all():
+        if message.sender == receiver:
+            texts.append(message)
+        
+    texts.sort(key=lambda x: x.time)
+
+    return render(request, "network/chat.html", {
+        'texts' : texts,
+    })
