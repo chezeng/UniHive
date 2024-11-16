@@ -81,13 +81,15 @@ def create_post(request):
     print('create_post called')
     if request.method == "POST":
         content = request.POST["content"]
+        latitude = request.POST["latitude"]
+        longitude = request.POST["longitude"]
+        picture = request.POST["image"]
         poster = request.user
-        post = Post(poster=poster,content=content)
+        post = Post(poster=poster,content=content,latitude=latitude,longitude=longitude,picture=picture)
         post.save()
-        print(post.time)
         return HttpResponseRedirect(reverse("index"))
     else :
-        return HttpResponseRedirect(reverse("index"))
+        return render(request,"network/create.html")
 
 def view_profile(request, username):
     print('view_profile called')

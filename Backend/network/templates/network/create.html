@@ -1,1 +1,59 @@
 {% extends 'network/layout.html' %}
+
+{% block script %}
+
+<script>
+    function getLocation() {
+        if(navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(showPosition, showError);
+        } else {
+            alert("Geolocation is not supported by this browser.");
+        }
+    }
+    function showPosition(position) {
+        document.getElementById("latitude").value = position.coords.latitude;
+        document.getElementById("longitude").value = position.coords.longitude;
+    }
+    function showError(error) {
+        switch(error.code) {
+            case error.PERMISSION_DENIED:
+                alert("User denied the request for Geolocation.");
+                break;
+            case error.POSITION_UNAVAILABLE:
+                alert("Location information is unavailable.");
+                break;
+            case error.TIMEOUT:
+                alert("The request to get user location timed out.");
+                break;
+            case error.UNKNOWN_ERROR:
+                alert("An unknown error occurred.");
+                break;
+        }
+    }
+</script>
+
+{% endblock %}
+
+{% block body %}
+
+<div class="container">
+    <h1>Found a lost item? Create posting</h1>
+
+    <form action="{% url 'create_post' %}" method="POST">
+        {% csrf_token %}
+        <textarea class="form-control" placeholder="Type your post" name="content" id="content"></textarea>
+        <input type="file" id="image" name="image" accept="image/*" required> 
+        <br><br>
+        <label for="latitude">Latitude:</label>
+        <input type="text" id="latitude" name="latitude" readonly>
+        <br><br>
+        <label for="longitude">Longitude:</label>
+        <input type="text" id="longitude" name="longitude" readonly>
+        <br><br>
+        <button type="button" onclick="getLocation()">Use Current Location</button>
+        <br><br>
+        <button type="submit" class="btn btn-primary mt-2">Post</button>
+    </form>  
+</div>
+
+{% endblock %}
