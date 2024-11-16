@@ -13,6 +13,7 @@ class Post(models.Model):
     picture = models.ImageField(upload_to='pictures/', blank=True, null=True)
     latitude = models.FloatField(default=43.4722893)
     longitude = models.FloatField(default=-80.5474325)  
+    pinned = models.BooleanField(default=False)
 
 class Network(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)

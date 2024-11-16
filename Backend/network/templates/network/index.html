@@ -7,6 +7,10 @@
 
     {% for type in page_obj %}
         <div class="container m-3 border">
+            {% if type.post.pinned %}
+            <h3> [[ PINNED ]] </h3>
+            {% endif %}
+
             <a href="{% url 'view_profile' type.post.poster.username %}">
                 <b>{{ type.post.poster.username }}</b>
             </a>

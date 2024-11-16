@@ -11,7 +11,7 @@ from django.views.decorators.http import require_http_methods
 import json
 
 def index(request):
-    post_list = Post.objects.all().order_by('-time')
+    post_list = Post.objects.all().order_by('-pinned', '-time')
 
     new_type = []
     for post in post_list:
