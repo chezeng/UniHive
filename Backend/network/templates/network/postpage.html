@@ -105,9 +105,10 @@
         <div id="map" style="height: 300px; width: 600px;"></div>
 
         <script>
-            var x = {{ post.latitude }};
-            var y = {{ post.longitude }};
-            var map = L.map('map').setView([x,y ], 15);
+            var x = "{{ post.latitude }}";
+            var y = "{{ post.longitude }}";
+
+            var map = L.map('map').setView([x,y], 15);
 
             L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
                 maxZoom: 19,
@@ -126,8 +127,7 @@
                         </div>
                     `);
                 })
-                .catch(error => console.log('Error fetching points', error));
-            });
+            }).catch(error => console.log('Error fetching points', error));
         </script>
     </div>
 </div>
