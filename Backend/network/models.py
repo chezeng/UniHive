@@ -11,6 +11,8 @@ class Post(models.Model):
     likes = models.ManyToManyField(User, blank=True, related_name="liked")
     found = models.BooleanField(default=False)
     picture = models.ImageField(upload_to='pictures/', blank=True, null=True)
+    latitude = models.FloatField(default=43.4722893)
+    longitude = models.FloatField(default=-80.5474325)  
 
 class Network(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)

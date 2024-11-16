@@ -24,6 +24,7 @@ urlpatterns = [
     path('mark_button', views.mark_button, name='mark_button'),
     path('unmark_button', views.unmark_button, name='unmark_button'),
     path('search', views.search, name='search'),
+    path('maps',views.maps,name='maps'),
 ]
 
 

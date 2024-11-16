@@ -369,3 +369,7 @@ def search(request):
         })
     else:
         return render(request, "network/search.html")
+    
+def maps(request):
+    all_post = Post.objects.all()
+    return render(request, "network/maps.html")
