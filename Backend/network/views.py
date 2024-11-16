@@ -96,7 +96,15 @@ def view_profile(request, username):
     print(username)
 
     user = User.objects.get(username=username)
+    
+    # in cases where network is not yet created
+    if not Network.objects.all().filter(user=user).exists():
+        network = Network(user=user)
+        network.save()
+        
     network = Network.objects.get(user=user)
+
+    print("helooooooo")
     
     followers = network.followers
     followers_count = followers.count()
@@ -116,6 +124,8 @@ def view_profile(request, username):
             others_profile_follow = False
         print('dead')
 
+    
+
     user_post = Post.objects.filter(poster=user).order_by('-time')
 
     new_type = []
@@ -127,6 +137,8 @@ def view_profile(request, username):
 
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
+
+    
 
     return render(request, "network/profile.html", {
         "network" : network, 

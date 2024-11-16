@@ -18,3 +18,8 @@ class Post(models.Model):
 class Network(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     followers = models.ManyToManyField(User, blank=True, related_name="following")
+
+class Message(models.Model):
+    text = models.TextField()
+    sender = models.ForeignKey(User, on_delete=models.CASCADE, related_name="sent_message")
+    receiver = models.ForeignKey(User, on_delete=models.CASCADE, related_name="received_message")
