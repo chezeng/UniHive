@@ -2,136 +2,76 @@
 {% load static %}
 
 {% block body %}
-<div class="container justify-content-center p-2 border">
-    <h1>All posts</h1>
-
+<div class="container mt-5">
+    <h1 class="text-center">All Posts</h1>
     {% for type in page_obj %}
-        <div class="container m-3 border">
-            {% if type.post.pinned %}
-            <h3> [[ PINNED ]] </h3>
-            {% endif %}
-
-            <a href="{% url 'view_profile' type.post.poster.username %}">
-                <b>{{ type.post.poster.username }}</b>
-            </a>
-
-            {% if user.is_authenticated and type.post.poster == user %}
+    <div class="card mb-4 shadow-sm">
+        <div class="card-header d-flex justify-content-between align-items-center">
             <div>
-                <a href="#" class="edit-button" data-id="{{ type.post.id }}">Edit</a>
+                <a href="{% url 'view_profile' type.post.poster.username %}">
+                    <b>{{ type.post.poster.username }}</b>
+                </a>
             </div>
-
-            <div class="edit-space" data-id="{{ type.post.id }}" style="display: none;">
-                <form>
-                    {% csrf_token %}
-                    <textarea class="text-space" data-id="{{ type.post.id }}"></textarea>
-                    <input type="submit" class="btn btn-primary" value="Save" />
-                </form>
-            </div>
-
-            {% if type.post.found %}
-                <div>
-                    <button class="mark-button" data-id="{{ type.post.id }}" style="display: none;">
-                        Mark found
-                    </button>
-                </div>
-                <div>
-                    <button class="unmark-button" data-id="{{ type.post.id }}" style="display: block;">
-                        Remove found mark
-                    </button>
-                </div>
-            {% else %}
-                <div>
-                    <button class="mark-button" data-id="{{ type.post.id }}" style="display: block;">
-                        Mark found
-                    </button>
-                </div>
-                <div>
-                    <button class="unmark-button" data-id="{{ type.post.id }}" style="display: none;">
-                        Remove found mark
-                    </button>
-                </div>
-            {% endif %}
-
-            {% else %}
-                {% if type.post.found %}
-                    <p>
-                        Status: Found
-                    </p>
-                {% else %}
-                    <p>
-                        Status: Not Found
-                    </p>
+            <div>
+                {% if type.post.pinned %}
+                    <span class="badge bg-warning text-dark">PINNED</span>
                 {% endif %}
-                
-            {% endif %}
-
-            {% if type.post.picture %}
-                <!-- put in the picture.url instead of just picture -->
-                <img src="{{ type.post.picture.url }}" alt="Picture" style="max-width: 300px;">
-            {% else %}
-                
-            {% endif %}
-
-            <div class="content-space" data-id="{{ type.post.id }}">{{ type.post.content }}</div>
-
-            <div>
-                <span>{{ type.post.time }}</span>
-            </div>
-
-            <!-- just display none the other to unlike -->
-            {% if type.is_liked %}
-                <div>
-                    <a href="#" class="unlike-button" data-id="{{ type.post.id }}">Unlike</a>
-                </div>  
-                <div>
-                    <a href="#" class="like-button" data-id="{{ type.post.id }}" style="display: none;">Like</a>
-                </div>  
-            {% else %}
-                <div>
-                    <a href="#" class="unlike-button" data-id="{{ type.post.id }}" style="display: none;"">Unlike</a>
-                </div>  
-                <div>
-                    <a href="#" class="like-button" data-id="{{ type.post.id }}">Like</a>
-                </div>  
-            {% endif %}
-
-            <div>
-                <span class="likes-count" data-id="{{ type.post.id }}">Likes: {{ type.post.likes.count }}</span>
-            </div>
-
-            <div>
-                <a href="{% url 'postpage' type.post.id %}">View post!</a>
+                <span class="badge bg-info">{{ type.post.category|default:"General" }}</span>
             </div>
         </div>
+        <div class="card-body">
+            <p class="card-text">{{ type.post.content }}</p>
+
+            {% if type.post.picture %}
+                <img src="{{ type.post.picture.url }}" class="img-fluid" alt="Post Image">
+            {% endif %}
+        </div>
+        <div class="card-footer d-flex justify-content-between align-items-center">
+            <div>
+                <span class="text-muted">{{ type.post.time }}</span>
+            </div>
+            <div>
+                {% if user.is_authenticated and type.post.poster == user %}
+                <a href="#" class="edit-button btn btn-sm btn-outline-primary" data-id="{{ type.post.id }}">Edit</a>
+                {% endif %}
+                
+                {% if type.is_liked %}
+                <a href="#" class="unlike-button btn btn-sm btn-danger" data-id="{{ type.post.id }}">Unlike</a>
+                {% else %}
+                <a href="#" class="like-button btn btn-sm btn-primary" data-id="{{ type.post.id }}">Like</a>
+                {% endif %}
+                
+                <span class="ms-2 likes-count" data-id="{{ type.post.id }}">❤️ {{ type.post.likes.count }}</span>
+            </div>
+        </div>
+    </div>
+    {% empty %}
+    <p class="text-center">No posts available.</p>
     {% endfor %}
 
-    <div class="pagination">
-        <span class="step-links">
+    <nav aria-label="Page navigation">
+        <ul class="pagination justify-content-center">
             {% if page_obj.has_previous %}
-                <a href="?page=1">&laquo; first</a>
-                <a href="?page={{ page_obj.previous_page_number }}">previous</a>
+            <li class="page-item"><a class="page-link" href="?page=1">&laquo; First</a></li>
+            <li class="page-item"><a class="page-link" href="?page={{ page_obj.previous_page_number }}">Previous</a></li>
             {% endif %}
 
-            <span class="current">
-                Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}.
-            </span>
+            <li class="page-item active"><a class="page-link">{{ page_obj.number }}</a></li>
 
             {% if page_obj.has_next %}
-                <a href="?page={{ page_obj.next_page_number }}">next</a>
-                <a href="?page={{ page_obj.paginator.num_pages }}">last &raquo;</a>
+            <li class="page-item"><a class="page-link" href="?page={{ page_obj.next_page_number }}">Next</a></li>
+            <li class="page-item"><a class="page-link" href="?page={{ page_obj.paginator.num_pages }}">Last &raquo;</a></li>
             {% endif %}
-        </span>
-    </div>
+        </ul>
+    </nav>
 </div>
 {% endblock %}
 
 {% block script %}
-    <script>
-        const savePostUrl = "{% url 'save_post' %}";
-        const likePostUrl = "{% url 'like_post' %}";
-        const unlikePostUrl = "{% url 'unlike_post' %}";
-        const markButtonUrl = "{% url 'mark_button' %}";
-        const unmarkButtonUrl = "{% url 'unmark_button' %}";
-    </script>
-    <script src="{% static 'network/index.js' %}"></script>
+<script>
+    const savePostUrl = "{% url 'save_post' %}";
+    const likePostUrl = "{% url 'like_post' %}";
+    const unlikePostUrl = "{% url 'unlike_post' %}";
+</script>
+<script src="{% static 'network/index.js' %}"></script>
 {% endblock %}
