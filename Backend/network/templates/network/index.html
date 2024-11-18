@@ -1,94 +1,42 @@
-{% extends "network/layout.html" %}
-{% load static %}
-
-{% block body %}
-<div class="container mt-5">
-    <h1 class="text-center">All Posts</h1>
-    {% for type in page_obj %}
-    <div class="card mb-4 shadow-sm">
-        <div class="card-header d-flex justify-content-between align-items-center">
-            <div>
-                <a href="{% url 'view_profile' type.post.poster.username %}">
-                    <b>{{ type.post.poster.username }}</b>
-                </a>
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <title>{% block title %}UniHive - UWaterloo Forum{% endblock %}</title>
+        <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    </head>
+    <body>
+        <body class="bg-custom-black min-h-screen flex items-center justify-center">
+            <div id="landing-container" class="text-center opacity-0 transition-opacity duration-1000">
+                <h1 class="text-4xl font-bold text-custom-white mb-8">Welcome to UniHive</h1>
+                <div class="space-y-4">
+                    <button id="look-button" class="w-64 px-4 py-2 bg-custom-white text-custom-black font-semibold rounded-lg shadow-lg transform hover:scale-105 hover:bg-yellow-500 transition duration-300">
+                        Look for Lost Item
+                    </button>
+                    <button id="post-button" class="w-64 px-4 py-2 bg-custom-white text-custom-black font-semibold rounded-lg shadow-lg transform hover:scale-105 hover:bg-yellow-500 transition duration-300">
+                        Post Lost Item
+                    </button>
+                </div>
             </div>
-            <div>
-                {% if type.post.pinned %}
-                    <span class="badge bg-warning text-dark">PINNED</span>
-                {% endif %}
-                <span class="badge bg-info">{{ type.post.category|default:"General" }}</span>
-            </div>
-        </div>
-        <div class="card-body">
-            <p class="card-text">{{ type.post.content }}</p>
-
-            {% if type.post.picture %}
-                <img src="{{ type.post.picture.url }}" class="img-fluid" alt="Post Image">
-            {% endif %}
-        </div>
-        <div class="card-footer d-flex justify-content-between align-items-center">
-            <div>
-                <span class="text-muted">{{ type.post.time }}</span>
-            </div>
-            <div>
-                {% if user.is_authenticated and type.post.poster == user %}
-                    <a href="#" class="edit-button" data-id="{{ type.post.id }}">Edit</a>
-                    <div class="edit-space" data-id="{{ type.post.id }}" style="display: none;">
-                        <form>
-                            {% csrf_token %}
-                            <textarea class="text-space" data-id="{{ type.post.id }}"></textarea>
-                            <input type="submit" class="btn btn-primary" value="Save" />
-                        </form>
-                    </div>
-                {% endif %}
-
-                {% if type.is_liked %}
-                    <div>
-                        <a href="#" class="unlike-button" data-id="{{ type.post.id }}">Unlike</a>
-                    </div>  
-                    <div>
-                        <a href="#" class="like-button" data-id="{{ type.post.id }}" style="display: none;">Like</a>
-                    </div>  
-                {% else %}
-                    <div>
-                        <a href="#" class="unlike-button" data-id="{{ type.post.id }}" style="display: none;">Unlike</a>
-                    </div>  
-                    <div>
-                        <a href="#" class="like-button" data-id="{{ type.post.id }}">Like</a>
-                    </div>  
-                {% endif %}
-                
-                <span class="ms-2 likes-count" data-id="{{ type.post.id }}">❤️ {{ type.post.likes.count }}</span>
-            </div>
-        </div>
-    </div>
-    {% empty %}
-    <p class="text-center">No posts available.</p>
-    {% endfor %}
-
-    <nav aria-label="Page navigation">
-        <ul class="pagination justify-content-center">
-            {% if page_obj.has_previous %}
-            <li class="page-item"><a class="page-link" href="?page=1">&laquo; First</a></li>
-            <li class="page-item"><a class="page-link" href="?page={{ page_obj.previous_page_number }}">Previous</a></li>
-            {% endif %}
-
-            <li class="page-item active"><a class="page-link">{{ page_obj.number }}</a></li>
-
-            {% if page_obj.has_next %}
-            <li class="page-item"><a class="page-link" href="?page={{ page_obj.next_page_number }}">Next</a></li>
-            <li class="page-item"><a class="page-link" href="?page={{ page_obj.paginator.num_pages }}">Last &raquo;</a></li>
-            {% endif %}
-        </ul>
-    </nav>
-</div>
-{% endblock %}
-
-{% block script %}
-<script>
-    const savePostUrl = "{% url 'save_post' %}";
-    const likePostUrl = "{% url 'like_post' %}";
-    const unlikePostUrl = "{% url 'unlike_post' %}";
-</script>
-<script src="{% static 'network/index.js' %}"></script>
-{% endblock %}
+        
+            <!-- JavaScript for Animations -->
+            <script>
+                window.addEventListener('DOMContentLoaded', () => {
+                    const container = document.getElementById('landing-container');
+                    setTimeout(() => {
+                        container.classList.remove('opacity-0');
+                        container.classList.add('opacity-100');
+                    }, 100); // Delay to ensure CSS transitions
+                });
+        
+                document.getElementById('look-button').addEventListener('click', () => {
+                    window.location.href = '/posts'; // Update with your actual URL
+                });
+        
+                document.getElementById('post-button').addEventListener('click', () => {
+                    // Redirect to the "Post Lost Item" page
+                    window.location.href = '/create_post'; // Update with your actual URL
+                });
+            </script>
+        </body>
+    </body>
+</html>

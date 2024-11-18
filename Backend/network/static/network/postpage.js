@@ -1,0 +1,141 @@
+document.addEventListener("DOMContentLoaded", function() {
+    document.querySelectorAll('.mark-button').forEach(button => {
+        button.addEventListener('click', async function(event) {
+            event.preventDefault();
+
+            const dataId = button.getAttribute('data-id');
+            const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+
+            try {
+                const response = await fetch(markButtonUrl, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': csrfToken,
+                    },
+                    body: JSON.stringify({
+                        post_id: dataId
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (data.status === 'success') {
+                    // do something
+                    const markButton = document.querySelector(`.mark-button[data-id="${dataId}"]`);
+                    const unmarkButton = document.querySelector(`.unmark-button[data-id="${dataId}"]`);
+
+                    markButton.style.display='none';
+                    unmarkButton.style.display='block';
+                } else {
+                    alert(data.message || 'Error saving post');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('An error occurred while saving.');
+            }
+        })
+    });
+
+    document.querySelectorAll('.unmark-button').forEach(button => {
+        button.addEventListener('click', async function(event) {
+            event.preventDefault();
+
+            const dataId = button.getAttribute('data-id');
+            const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+
+            try {
+                const response = await fetch(unmarkButtonUrl, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': csrfToken,
+                    },
+                    body: JSON.stringify({
+                        post_id: dataId
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (data.status === 'success') {
+                    // do something
+                    const markButton = document.querySelector(`.mark-button[data-id="${dataId}"]`);
+                    const unmarkButton = document.querySelector(`.unmark-button[data-id="${dataId}"]`);
+
+                    markButton.style.display='block';
+                    unmarkButton.style.display='none';
+                } else {
+                    alert(data.message || 'Error saving post');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('An error occurred while saving.');
+            }
+        })
+    });
+
+    document.querySelectorAll('.edit-button').forEach(button => {
+        button.addEventListener('click', function(event) {
+            event.preventDefault();
+            console.log('clicked');
+    
+            const dataId = button.getAttribute('data-id');
+            const editSpace = document.querySelector(`.edit-space[data-id="${dataId}"]`);
+            const contentSpace = document.querySelector(`.content-space[data-id="${dataId}"]`);
+            const textSpace = document.querySelector(`.text-space[data-id="${dataId}"]`);
+    
+            if (editSpace.style.display === 'none' || editSpace.style.display === '') {
+                editSpace.style.display = 'block';
+                textSpace.value = contentSpace.innerText.trim(); // Use value for textarea
+                contentSpace.style.display = 'none';
+            } else {
+                editSpace.style.display = 'none';
+                contentSpace.style.display = 'block';
+            }
+        });
+    });
+    
+    document.querySelectorAll('.edit-space form').forEach(form => {
+        form.addEventListener('submit', async function(event) {
+            event.preventDefault();
+    
+            const textSpace = form.querySelector('.text-space');
+            const dataId = textSpace.getAttribute('data-id');
+            const content = textSpace.value;
+            
+            const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+            
+            try {
+                const response = await fetch(savePostUrl, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': csrfToken,
+                    },
+                    body: JSON.stringify({
+                        post_id: dataId,
+                        content: content
+                    })
+                });
+
+                const data = await response.json();
+                
+                if (data.status === 'success') {
+                    const contentSpace = document.querySelector(`.content-space[data-id="${dataId}"]`);
+                    contentSpace.innerText = content;
+                    
+                    const editSpace = document.querySelector(`.edit-space[data-id="${dataId}"]`);
+                    editSpace.style.display = 'none';
+                    contentSpace.style.display = 'block';
+                    
+                } else {
+                    alert(data.message || 'Error saving post');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('An error occurred while saving.');
+            }
+        });
+    });
+});

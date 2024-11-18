@@ -11,6 +11,9 @@ from django.views.decorators.http import require_http_methods
 import json
 
 def index(request):
+    return render(request, 'network/index.html')
+
+def posts(request):
     post_list = Post.objects.all().order_by('-pinned', '-time')
 
     new_type = []
@@ -23,7 +26,7 @@ def index(request):
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
 
-    return render(request, 'network/index.html', {'page_obj': page_obj})
+    return render(request, 'network/posts.html', {'page_obj': page_obj})
 
 def login_view(request):
     if request.method == "POST":
@@ -36,7 +39,7 @@ def login_view(request):
         # Check if authentication successful
         if user is not None:
             login(request, user)
-            return HttpResponseRedirect(reverse("index"))
+            return HttpResponseRedirect(reverse("posts"))
         else:
             return render(request, "network/login.html", {
                 "message": "Invalid username and/or password."
@@ -46,7 +49,7 @@ def login_view(request):
 
 def logout_view(request):
     logout(request)
-    return HttpResponseRedirect(reverse("index"))
+    return HttpResponseRedirect(reverse("posts"))
 
 def register(request):
     if request.method == "POST":
@@ -72,7 +75,7 @@ def register(request):
                 "message": "Username already taken."
             })
         login(request, user)
-        return HttpResponseRedirect(reverse("index"))
+        return HttpResponseRedirect(reverse("post"))
     else:
         return render(request, "network/register.html")
     
@@ -87,7 +90,7 @@ def create_post(request):
         poster = request.user
         post = Post(poster=poster,content=content,latitude=latitude,longitude=longitude,picture=picture)
         post.save()
-        return HttpResponseRedirect(reverse("index"))
+        return HttpResponseRedirect(reverse("posts"))
     else :
         return render(request,"network/create.html")
 

@@ -1,4 +1,122 @@
 {% extends "network/layout.html" %}
+{% load static %}
+
+{% block body %}
+<div class="max-w-4xl mx-auto p-4">
+    <div class="bg-white rounded-lg shadow-md overflow-hidden">
+        <div class="p-6">
+            <div class="flex justify-between items-center mb-4">
+                <a href="{% url 'view_profile' post.poster.username %}" class="text-lg font-semibold hover:text-blue-600 transition-colors">
+                    {{ post.poster.username }}
+                </a>
+                <span class="text-sm text-gray-500">{{ post.time }}</span>
+            </div>
+
+            {% if post.picture %}
+                <div class="mb-4">
+                    <img src="{{ post.picture.url }}" alt="Post image" class="rounded-lg max-h-96 w-full object-cover">
+                </div>
+            {% endif %}
+
+            <div class="content-space mb-4 text-gray-700" data-id="{{ post.id }}">
+                {{ post.content }}
+            </div>
+
+            {% if user.is_authenticated and post.poster == user %}
+                <div class="space-y-3 mb-4">
+                    <button class="edit-button px-4 py-2 text-sm text-blue-600 hover:bg-blue-50 rounded-md transition-colors" 
+                            data-id="{{ post.id }}">
+                        Edit
+                    </button>
+
+                    <div class="edit-space hidden" data-id="{{ post.id }}">
+                        <form class="space-y-3">
+                            {% csrf_token %}
+                            <textarea class="text-space w-full p-2 border rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500" 
+                                      data-id="{{ post.id }}"></textarea>
+                            <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors">
+                                Save
+                            </button>
+                        </form>
+                    </div>
+
+                    <div class="flex gap-2">
+                        <button class="mark-button px-4 py-2 text-sm bg-green-600 text-white rounded-md hover:bg-green-700 transition-colors {% if post.found %}hidden{% endif %}"
+                                data-id="{{ post.id }}">
+                            Mark found
+                        </button>
+                        <button class="unmark-button px-4 py-2 text-sm bg-yellow-600 text-white rounded-md hover:bg-yellow-700 transition-colors {% if not post.found %}hidden{% endif %}"
+                                data-id="{{ post.id }}">
+                            Remove found mark
+                        </button>
+                    </div>
+                </div>
+            {% else %}
+                <div class="mb-4">
+                    {% if post.found %}
+                        <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-green-100 text-green-800">
+                            Status: Found
+                        </span>
+                    {% else %}
+                        <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-gray-100 text-gray-800">
+                            Status: Not Found
+                        </span>
+                    {% endif %}
+                </div>
+            {% endif %}
+
+            <div class="flex items-center gap-4 mb-6">
+                <div class="flex gap-2">
+                    <button class="like-button px-4 py-2 text-sm border border-blue-600 text-blue-600 rounded-md hover:bg-blue-50 transition-colors {% if is_liked %}hidden{% endif %}"
+                            data-id="{{ post.id }}">
+                        Like
+                    </button>
+                    <button class="unlike-button px-4 py-2 text-sm bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors {% if not is_liked %}hidden{% endif %}"
+                            data-id="{{ post.id }}">
+                        Unlike
+                    </button>
+                </div>
+                <span class="likes-count text-sm text-gray-600" data-id="{{ post.id }}">
+                    {{ post.likes.count }} likes
+                </span>
+            </div>
+
+            <div class="rounded-lg overflow-hidden border border-gray-200">
+                <div id="map" class="h-96 w-full"></div>
+            </div>
+
+            <script>
+                const markButtonUrl = "{% url 'mark_button' %}";
+                const unmarkButtonUrl = "{% url 'unmark_button' %}";
+        
+                var x = "{{ post.latitude }}";
+                var y = "{{ post.longitude }}";
+        
+                var map = L.map('map').setView([x,y], 15);
+        
+                L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                    maxZoom: 19,
+                    attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+                }).addTo(map);
+        
+                fetch("{% url 'points' %}").then(response => response.json()).then(data => {
+                    data.forEach(point => {
+                        var marker = L.marker([point.lat, point.lng]).addTo(map);
+        
+                        marker.bindPopup(`
+                        <div>
+                            <h3>${point.description}</h3>
+                            <div>
+                                <a href="${point.url}" target="_blank">View post!</a>
+                            </div>
+                        `);
+                    })
+                }).catch(error => console.log('Error fetching points', error));
+            </script>
+        </div>
+    </div>
+</div>
+{% endblock %}
 
 {% block script %}
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
@@ -7,128 +125,6 @@
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
     integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
     crossorigin=""></script>
-{% endblock %}
-
-{% block body %}
-<div class="container justify-content-center p-2 border">
-    <h1>All posts</h1>
-
-    <div class="container m-3 border">
-        <a href="{% url 'view_profile' post.poster.username %}">
-            <b>{{ post.poster.username }}</b>
-        </a>
-
-        {% if user.is_authenticated and post.poster == user %}
-        <div>
-            <a href="#" class="edit-button" data-id="{{ post.id }}">Edit</a>
-        </div>
-
-        <div class="edit-space" data-id="{{ post.id }}" style="display: none;">
-            <form>
-                {% csrf_token %}
-                <textarea class="text-space" data-id="{{ post.id }}"></textarea>
-                <input type="submit" class="btn btn-primary" value="Save" />
-            </form>
-        </div>
-
-        {% if post.found %}
-            <div>
-                <button class="mark-button" data-id="{{ post.id }}" style="display: none;">
-                    Mark found
-                </button>
-            </div>
-            <div>
-                <button class="unmark-button" data-id="{{ post.id }}" style="display: block;">
-                    Remove found mark
-                </button>
-            </div>
-        {% else %}
-            <div>
-                <button class="mark-button" data-id="{{ post.id }}" style="display: block;">
-                    Mark found
-                </button>
-            </div>
-            <div>
-                <button class="unmark-button" data-id="{{ post.id }}" style="display: none;">
-                    Remove found mark
-                </button>
-            </div>
-        {% endif %}
-
-        {% else %}
-            {% if post.found %}
-                <p>
-                    Status: Found
-                </p>
-            {% else %}
-                <p>
-                    Status: Not Found
-                </p>
-            {% endif %}
-            
-        {% endif %}
-
-        {% if post.picture %}
-            <!-- put in the picture.url instead of just picture -->
-            <img src="{{ post.picture.url }}" alt="Picture" style="max-width: 300px;">
-        {% else %}
-            
-        {% endif %}
-
-        <div class="content-space" data-id="{{ post.id }}">{{ post.content }}</div>
-
-        <div>
-            <span>{{ post.time }}</span>
-        </div>
-
-        <!-- just display none the other to unlike -->
-        {% if is_liked %}
-            <div>
-                <a href="#" class="unlike-button" data-id="{{ post.id }}">Unlike</a>
-            </div>  
-            <div>
-                <a href="#" class="like-button" data-id="{{ post.id }}" style="display: none;">Like</a>
-            </div>  
-        {% else %}
-            <div>
-                <a href="#" class="unlike-button" data-id="{{ post.id }}" style="display: none;"">Unlike</a>
-            </div>  
-            <div>
-                <a href="#" class="like-button" data-id="{{ post.id }}">Like</a>
-            </div>  
-        {% endif %}
-
-        <div>
-            <span class="likes-count" data-id="{{ post.id }}">Likes: {{ post.likes.count }}</span>
-        </div>
-
-        <div id="map" style="height: 300px; width: 600px;"></div>
-
-        <script>
-            var x = "{{ post.latitude }}";
-            var y = "{{ post.longitude }}";
-
-            var map = L.map('map').setView([x,y], 15);
-
-            L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                maxZoom: 19,
-                attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
-            }).addTo(map);
-
-            fetch("{% url 'points' %}").then(response => response.json()).then(data => {
-                data.forEach(point => {
-                    var marker = L.marker([point.lat, point.lng]).addTo(map);
-
-                    marker.bindPopup(`
-                    <div>
-                        <h3>${point.description}</h3>
-                        <div>
-                            <a href="${point.url}" target="_blank">View post!</a>
-                        </div>
-                    `);
-                })
-            }).catch(error => console.log('Error fetching points', error));
-        </script>
-    </div>
-</div>
+    
+    <script src="{% static 'network/postpage.js' %}"></script>
 {% endblock %}

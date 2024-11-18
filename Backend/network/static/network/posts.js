@@ -67,6 +67,8 @@ document.addEventListener("DOMContentLoaded", function() {
     document.querySelectorAll('.like-button').forEach(button => {
         button.addEventListener('click', async function(event) {
             event.preventDefault();
+
+            console.log('oii')
     
             const dataId = button.getAttribute('data-id');
             
@@ -94,7 +96,7 @@ document.addEventListener("DOMContentLoaded", function() {
                     
                     if (likesCountElement) {
                         console.log("Likes count:", data.likes_count);
-                        likesCountElement.textContent = `Likes: ${data.likes_count}`;
+                        likesCountElement.textContent = `❤️ ${data.likes_count}`;
                         likeButton.style.display = 'none';
                         unlikeButton.style.display = 'block';
                     }
@@ -138,7 +140,7 @@ document.addEventListener("DOMContentLoaded", function() {
                     const unlikeButton = document.querySelector(`.unlike-button[data-id="${dataId}"]`);
                     if (likesCountElement) {
                         console.log("Likes count:", data.likes_count);
-                        likesCountElement.textContent = `Likes: ${data.likes_count}`;
+                        likesCountElement.textContent = `❤️ ${data.likes_count}`;
                         likeButton.style.display = 'block';
                         unlikeButton.style.display = 'none';
                     }
@@ -150,81 +152,5 @@ document.addEventListener("DOMContentLoaded", function() {
                 alert('An error occurred while saving.');
             }
         });
-    });
-
-    document.querySelectorAll('.mark-button').forEach(button => {
-        button.addEventListener('click', async function(event) {
-            event.preventDefault();
-
-            const dataId = button.getAttribute('data-id');
-            const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
-
-            try {
-                const response = await fetch(markButtonUrl, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-CSRFToken': csrfToken,
-                    },
-                    body: JSON.stringify({
-                        post_id: dataId
-                    })
-                });
-                
-                const data = await response.json();
-                
-                if (data.status === 'success') {
-                    // do something
-                    const markButton = document.querySelector(`.mark-button[data-id="${dataId}"]`);
-                    const unmarkButton = document.querySelector(`.unmark-button[data-id="${dataId}"]`);
-
-                    markButton.style.display='none';
-                    unmarkButton.style.display='block';
-                } else {
-                    alert(data.message || 'Error saving post');
-                }
-            } catch (error) {
-                console.error('Error:', error);
-                alert('An error occurred while saving.');
-            }
-        })
-    });
-
-    document.querySelectorAll('.unmark-button').forEach(button => {
-        button.addEventListener('click', async function(event) {
-            event.preventDefault();
-
-            const dataId = button.getAttribute('data-id');
-            const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
-
-            try {
-                const response = await fetch(unmarkButtonUrl, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-CSRFToken': csrfToken,
-                    },
-                    body: JSON.stringify({
-                        post_id: dataId
-                    })
-                });
-                
-                const data = await response.json();
-                
-                if (data.status === 'success') {
-                    // do something
-                    const markButton = document.querySelector(`.mark-button[data-id="${dataId}"]`);
-                    const unmarkButton = document.querySelector(`.unmark-button[data-id="${dataId}"]`);
-
-                    markButton.style.display='block';
-                    unmarkButton.style.display='none';
-                } else {
-                    alert(data.message || 'Error saving post');
-                }
-            } catch (error) {
-                console.error('Error:', error);
-                alert('An error occurred while saving.');
-            }
-        })
     });
 });
