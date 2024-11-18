@@ -32,13 +32,30 @@
             </div>
             <div>
                 {% if user.is_authenticated and type.post.poster == user %}
-                <a href="#" class="edit-button btn btn-sm btn-outline-primary" data-id="{{ type.post.id }}">Edit</a>
+                    <a href="#" class="edit-button" data-id="{{ type.post.id }}">Edit</a>
+                    <div class="edit-space" data-id="{{ type.post.id }}" style="display: none;">
+                        <form>
+                            {% csrf_token %}
+                            <textarea class="text-space" data-id="{{ type.post.id }}"></textarea>
+                            <input type="submit" class="btn btn-primary" value="Save" />
+                        </form>
+                    </div>
                 {% endif %}
-                
+
                 {% if type.is_liked %}
-                <a href="#" class="unlike-button btn btn-sm btn-danger" data-id="{{ type.post.id }}">Unlike</a>
+                    <div>
+                        <a href="#" class="unlike-button" data-id="{{ type.post.id }}">Unlike</a>
+                    </div>  
+                    <div>
+                        <a href="#" class="like-button" data-id="{{ type.post.id }}" style="display: none;">Like</a>
+                    </div>  
                 {% else %}
-                <a href="#" class="like-button btn btn-sm btn-primary" data-id="{{ type.post.id }}">Like</a>
+                    <div>
+                        <a href="#" class="unlike-button" data-id="{{ type.post.id }}" style="display: none;">Unlike</a>
+                    </div>  
+                    <div>
+                        <a href="#" class="like-button" data-id="{{ type.post.id }}">Like</a>
+                    </div>  
                 {% endif %}
                 
                 <span class="ms-2 likes-count" data-id="{{ type.post.id }}">❤️ {{ type.post.likes.count }}</span>
