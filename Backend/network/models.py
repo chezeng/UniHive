@@ -1,9 +1,15 @@
 from django.contrib.auth.models import AbstractUser
 from django.db import models
 from django.utils.timezone import now
+import os
 
 class User(AbstractUser):
     pass
+
+def post_picture_path(instance, filename):
+    ext = filename.split('.')[-1]
+    new_filename = f"{instance.id}.{ext}"
+    return os.path.join('pictures/', new_filename)
 
 class Post(models.Model):
     poster = models.ForeignKey(User, on_delete=models.CASCADE)
@@ -11,6 +17,7 @@ class Post(models.Model):
     time = models.DateTimeField(auto_now_add=True)
     likes = models.ManyToManyField(User, blank=True, related_name="liked")
     found = models.BooleanField(default=False)
+    # picture = models.ImageField(upload_to=post_picture_path, blank=True, null=True)
     picture = models.ImageField(upload_to='pictures/', blank=True, null=True)
     latitude = models.FloatField(default=43.4722893)
     longitude = models.FloatField(default=-80.5474325)  

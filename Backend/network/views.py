@@ -86,7 +86,7 @@ def create_post(request):
         content = request.POST["content"]
         latitude = request.POST["latitude"]
         longitude = request.POST["longitude"]
-        picture = request.POST["image"]
+        picture = request.FILES.get("image")
         poster = request.user
         post = Post(poster=poster,content=content,latitude=latitude,longitude=longitude,picture=picture)
         post.save()
