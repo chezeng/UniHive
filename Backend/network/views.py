@@ -121,13 +121,9 @@ def view_profile(request, username):
     if user == request.user:
         others_profile = False
     else:
-        print('alive')
         # has to use the id / primary key
         if followers.filter(pk=request.user.pk).exists():
             others_profile_follow = False
-        print('dead')
-
-    
 
     user_post = Post.objects.filter(poster=user).order_by('-time')
 
@@ -140,8 +136,6 @@ def view_profile(request, username):
 
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
-
-    
 
     return render(request, "network/profile.html", {
         "network" : network, 
@@ -303,9 +297,12 @@ def unlike_post(request):
     
 def postpage(request, post_id):
     post = Post.objects.get(id=post_id)
+    is_liked = post.likes.filter(id=request.user.id).exists()
+
     return render(request, 'network/postpage.html', {
         'post' : post,
-        'post_id' : post_id
+        'post_id' : post_id,
+        'is_liked' : is_liked,
     })
    
 @require_http_methods(["POST"])

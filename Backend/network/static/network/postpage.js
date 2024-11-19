@@ -95,7 +95,7 @@ document.addEventListener("DOMContentLoaded", function() {
             }
         });
     });
-    
+
     document.querySelectorAll('.edit-space form').forEach(form => {
         form.addEventListener('submit', async function(event) {
             event.preventDefault();
@@ -129,6 +129,96 @@ document.addEventListener("DOMContentLoaded", function() {
                     editSpace.style.display = 'none';
                     contentSpace.style.display = 'block';
                     
+                } else {
+                    alert(data.message || 'Error saving post');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('An error occurred while saving.');
+            }
+        });
+    });
+
+    document.querySelectorAll('.like-button').forEach(button => {
+        button.addEventListener('click', async function(event) {
+            event.preventDefault();
+
+            console.log('oii')
+    
+            const dataId = button.getAttribute('data-id');
+            
+            // Get CSRF token from meta tag
+            const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+            
+            try {
+                const response = await fetch(likePostUrl, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': csrfToken,
+                    },
+                    body: JSON.stringify({
+                        post_id: dataId
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (data.status === 'success') {
+                    const likesCountElement = document.querySelector(`.likes-count[data-id="${dataId}"]`);
+                    const likeButton = document.querySelector(`.like-button[data-id="${dataId}"]`);
+                    const unlikeButton = document.querySelector(`.unlike-button[data-id="${dataId}"]`);
+                    
+                    if (likesCountElement) {
+                        console.log("Likes count:", data.likes_count);
+                        likesCountElement.textContent = `❤️ ${data.likes_count}`;
+                        likeButton.style.display = 'none';
+                        unlikeButton.style.display = 'block';
+                    }
+
+                } else {
+                    alert(data.message || 'Error saving post');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('An error occurred while saving.');
+            }
+        });
+    });
+
+    document.querySelectorAll('.unlike-button').forEach(button => {
+        button.addEventListener('click', async function(event) {
+            event.preventDefault();
+    
+            const dataId = button.getAttribute('data-id');
+            
+            // Get CSRF token from meta tag
+            const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+            
+            try {
+                const response = await fetch(unlikePostUrl, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': csrfToken,
+                    },
+                    body: JSON.stringify({
+                        post_id: dataId
+                    })
+                });
+
+                const data = await response.json();
+                
+                if (data.status === 'success') {
+                    const likesCountElement = document.querySelector(`.likes-count[data-id="${dataId}"]`);
+                    const likeButton = document.querySelector(`.like-button[data-id="${dataId}"]`);
+                    const unlikeButton = document.querySelector(`.unlike-button[data-id="${dataId}"]`);
+                    if (likesCountElement) {
+                        console.log("Likes count:", data.likes_count);
+                        likesCountElement.textContent = `❤️ ${data.likes_count}`;
+                        likeButton.style.display = 'block';
+                        unlikeButton.style.display = 'none';
+                    }
                 } else {
                     alert(data.message || 'Error saving post');
                 }
