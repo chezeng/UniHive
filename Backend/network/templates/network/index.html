@@ -18,23 +18,21 @@
                 </div>
             </div>
         
-            <!-- JavaScript for Animations -->
             <script>
                 window.addEventListener('DOMContentLoaded', () => {
                     const container = document.getElementById('landing-container');
                     setTimeout(() => {
                         container.classList.remove('opacity-0');
                         container.classList.add('opacity-100');
-                    }, 100); // Delay to ensure CSS transitions
+                    }, 100); 
                 });
         
                 document.getElementById('look-button').addEventListener('click', () => {
-                    window.location.href = '/posts'; // Update with your actual URL
+                    window.location.href = '/posts'; 
                 });
         
                 document.getElementById('post-button').addEventListener('click', () => {
-                    // Redirect to the "Post Lost Item" page
-                    window.location.href = '/create_post'; // Update with your actual URL
+                    window.location.href = '/create_post'; 
                 });
             </script>
         </body>
