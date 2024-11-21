@@ -21,12 +21,12 @@ def posts(request):
         is_liked = post.likes.filter(id=request.user.id).exists()
         new_type.append({"post": post, "is_liked": is_liked})
 
-    paginator = Paginator(new_type, 10)
+    # paginator = Paginator(new_type, 10)
 
-    page_number = request.GET.get('page')
-    page_obj = paginator.get_page(page_number)
+    # page_number = request.GET.get('page')
+    # page_obj = paginator.get_page(page_number)
 
-    return render(request, 'network/posts.html', {'page_obj': page_obj})
+    return render(request, 'network/posts.html', {'page_obj': new_type})
 
 def login_view(request):
     if request.method == "POST":
@@ -75,7 +75,7 @@ def register(request):
                 "message": "Username already taken."
             })
         login(request, user)
-        return HttpResponseRedirect(reverse("post"))
+        return HttpResponseRedirect(reverse("posts"))
     else:
         return render(request, "network/register.html")
     

@@ -68,7 +68,8 @@ document.addEventListener("DOMContentLoaded", function() {
         button.addEventListener('click', async function(event) {
             event.preventDefault();
 
-            console.log('oii')
+            console.log('oii');
+            console.log('asdjaskdsad');
     
             const dataId = button.getAttribute('data-id');
             
@@ -95,6 +96,7 @@ document.addEventListener("DOMContentLoaded", function() {
                     const unlikeButton = document.querySelector(`.unlike-button[data-id="${dataId}"]`);
                     
                     if (likesCountElement) {
+                        console.log('asdkasd');
                         console.log("Likes count:", data.likes_count);
                         likesCountElement.textContent = `❤️ ${data.likes_count}`;
                         likeButton.style.display = 'none';
