@@ -3,104 +3,42 @@
 
 {% block body %}
 
-<div class="container">
-
-    <h1>Profile Page</h1>
-
-    <div class="container">
-        {{ network.user.username }}
-    </div>
+<div class="max-w-3xl mx-auto bg-white p-6 rounded-lg shadow-lg">
+    <header class="text-center mb-6">
+        <h1 class="text-3xl font-semibold text-gray-800">{{ network.user.username }}</h1>
+    </header>
 
     {% if others_profile and user.is_authenticated %}
-        {% if others_profile_follow %}
-            <form action="{% url 'press_follow' username=network.user.username %}" method="post">
-                {% csrf_token %}
-                <button type="submit">Follow</button>
-            </form>
-        {% else %}
-        <form action="{% url 'press_unfollow' username=network.user.username %}" method="post">
-            {% csrf_token %}
-            <button type="submit">Unfollow</button>
-        </form>
-        {% endif %}
+        <div class="text-center mb-6">
+            {% if others_profile_follow %}
+                <form action="{% url 'press_follow' username=network.user.username %}" method="post">
+                    {% csrf_token %}
+                    <button type="submit" class="px-6 py-2 bg-green-500 text-white rounded-lg shadow-md hover:bg-green-600 focus:outline-none">
+                        Follow
+                    </button>
+                </form>
+            {% else %}
+                <form action="{% url 'press_unfollow' username=network.user.username %}" method="post">
+                    {% csrf_token %}
+                    <button type="submit" class="px-6 py-2 bg-yellow-500 text-white rounded-lg shadow-md hover:bg-yellow-600 focus:outline-none">
+                        Unfollow
+                    </button>
+                </form>
+            {% endif %}
+        </div>
     {% endif %}
 
-    <div class="container">
-        Followers: {{ followers_count }}    
-    </div>
-
-    <div class="container">
-        Following: {{ following_count }}    
-    </div>
-
-    {% for type in page_obj %}
-        <div class="container m-3 border">
-            <a href="{% url 'view_profile' type.post.poster.username %}">
-                <b>{{ type.post.poster.username }}</b>
-            </a>
-
-            {% if user.is_authenticated and type.post.poster == user %}
-            <div>
-                <a href="#" class="edit-button" data-id="{{ type.post.id }}">Edit</a>
-            </div>
-
-            <div class="edit-space" data-id="{{ type.post.id }}" style="display: none;">
-                <form>
-                    {% csrf_token %}
-                    <textarea class="text-space" data-id="{{ type.post.id }}"></textarea>
-                    <input type="submit" class="btn btn-primary" value="Save" />
-                </form>
-            </div>
-            {% endif %}
-
-            <div class="content-space" data-id="{{ type.post.id }}">{{ type.post.content }}</div>
-
-            <div>
-                <span>{{ type.post.time }}</span>
-            </div>
-
-            <!-- just display none the other to unlike -->
-            {% if type.is_liked %}
-                <div>
-                    <a href="#" class="unlike-button" data-id="{{ type.post.id }}">Unlike</a>
-                </div>  
-                <div>
-                    <a href="#" class="like-button" data-id="{{ type.post.id }}" style="display: none;">Like</a>
-                </div>  
-            {% else %}
-                <div>
-                    <a href="#" class="unlike-button" data-id="{{ type.post.id }}" style="display: none;"">Unlike</a>
-                </div>  
-                <div>
-                    <a href="#" class="like-button" data-id="{{ type.post.id }}">Like</a>
-                </div>  
-            {% endif %}
-
-            <div>
-                <span class="likes-count" data-id="{{ type.post.id }}">Likes: {{ type.post.likes.count }}</span>
-            </div>
-
-            
+    <div class="flex justify-around mt-8 pt-6 border-t border-gray-200">
+        <div class="text-center">
+            <strong class="text-2xl text-yellow-500">{{ followers_count }}</strong>
+            <span class="text-sm text-gray-500">Followers</span>
         </div>
-    {% endfor %}
-
-    <div class="pagination">
-        <span class="step-links">
-            {% if page_obj.has_previous %}
-                <a href="?page=1">&laquo; first</a>
-                <a href="?page={{ page_obj.previous_page_number }}">previous</a>
-            {% endif %}
-    
-            <span class="current">
-                Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}.
-            </span>
-    
-            {% if page_obj.has_next %}
-                <a href="?page={{ page_obj.next_page_number }}">next</a>
-                <a href="?page={{ page_obj.paginator.num_pages }}">last &raquo;</a>
-            {% endif %}
-        </span>
+        <div class="text-center">
+            <strong class="text-2xl text-yellow-500">{{ following_count }}</strong>
+            <span class="text-sm text-gray-500">Following</span>
+        </div>
     </div>
+
 </div>
 
 {% endblock %}

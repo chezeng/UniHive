@@ -20,7 +20,7 @@
         attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
     }).addTo(map);
 
-    fetch("{% url 'points' %}").then(response => response.json()).then(data => {
+    fetch("{% url 'all_points' %}").then(response => response.json()).then(data => {
         data.forEach(point => {
             var marker = L.marker([point.lat, point.lng]).addTo(map);
 
