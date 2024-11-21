@@ -23,9 +23,11 @@
         <div class="card-body">
             <p class="card-text">{{ type.post.content }}</p>
 
-            {% if type.post.picture %}
-                <img src="{{ type.post.picture.url }}" class="img-fluid" alt="Post Image">
-            {% endif %}
+            <div class="container" style="height: 150px; overflow: hidden; padding: 0;">
+                {% if type.post.picture %}
+                    <img src="{{ type.post.picture.url }}" alt="Post Image" style="max-width: 100%; max-height: 100%;">
+                {% endif %}
+            </div>
         </div>
         <div class="card-footer d-flex justify-content-between align-items-center">
             <div>
