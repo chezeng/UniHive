@@ -106,10 +106,12 @@
             {% endif %}
         </ul>
     </nav>
+    <script src="posts.js?v=1.0"></script>
 </div>
 {% endblock %}
 
 {% block script %}
+
 <script>
     const savePostUrl = "{% url 'save_post' %}";
     const likePostUrl = "{% url 'like_post' %}";
