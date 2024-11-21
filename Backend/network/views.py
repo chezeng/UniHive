@@ -387,14 +387,23 @@ def search(request):
 def maps(request):
     return render(request, "network/maps.html")
 
-def points(request):
-    all_post = Post.objects.all()
-    point_list = []
-    for post in all_post:
-        if not post.found:
-            print(post.content)
-            url = reverse('postpage', args=[post.id])
-            point_list.append({"lat": post.latitude, "lng": post.longitude, "description":post.content, "id": post.id, "url": url})
+def points(request, post_id):
+    if post_id:
+        all_post = Post.objects.all()
+        point_list = []
+        for post in all_post:
+            if not post.found and post_id == post.id:
+                print(post.content)
+                url = reverse('postpage', args=[post.id])
+                point_list.append({"lat": post.latitude, "lng": post.longitude, "description":post.content, "id": post.id, "url": url})
+    else:
+        all_post = Post.objects.all()
+        point_list = []
+        for post in all_post:
+            if not post.found:
+                print(post.content)
+                url = reverse('postpage', args=[post.id])
+                point_list.append({"lat": post.latitude, "lng": post.longitude, "description":post.content, "id": post.id, "url": url})
 
     return JsonResponse(point_list, safe=False)
 
