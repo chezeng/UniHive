@@ -132,10 +132,10 @@ def view_profile(request, username):
         is_liked = post.likes.filter(id=request.user.id).exists()
         new_type.append({"post": post, "is_liked": is_liked})
 
-    paginator = Paginator(new_type, 10)
+    # paginator = Paginator(new_type, 10)
 
-    page_number = request.GET.get('page')
-    page_obj = paginator.get_page(page_number)
+    # page_number = request.GET.get('page')
+    # page_obj = paginator.get_page(page_number)
 
     return render(request, "network/profile.html", {
         "network" : network, 
@@ -143,7 +143,7 @@ def view_profile(request, username):
         "following_count" : following_count,
         "others_profile" : others_profile,
         "others_profile_follow" : others_profile_follow,
-        'page_obj': page_obj
+        'page_obj': new_type
     })
 
 @login_required

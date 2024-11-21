@@ -89,7 +89,7 @@
     {% empty %}
     <p class="text-center">No posts available.</p>
     {% endfor %}
-
+<!-- 
     <nav aria-label="Page navigation">
         <ul class="pagination justify-content-center">
             {% if page_obj.has_previous %}
@@ -104,7 +104,7 @@
             <li class="page-item"><a class="page-link" href="?page={{ page_obj.paginator.num_pages }}">Last &raquo;</a></li>
             {% endif %}
         </ul>
-    </nav>
+    </nav> -->
 </div>
 {% endblock %}
 
@@ -114,5 +114,5 @@
     const likePostUrl = "{% url 'like_post' %}";
     const unlikePostUrl = "{% url 'unlike_post' %}";
 </script>
-<script src="{% static 'network/posts.js' %}"></script>
+<script src="{% static 'network/following.js' %}"></script>
 {% endblock %}
