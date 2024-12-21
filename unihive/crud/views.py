@@ -36,7 +36,7 @@ def update_task(request, pk):
 
 # Delete a task
 def delete_task(request, pk):
-    task = get_object_or_404(pk=pk)
+    task = get_object_or_404(Task, pk=pk)
     if request.method == 'POST':
         task.delete()
         return redirect("task_list")
