@@ -4,7 +4,9 @@ from django.utils.timezone import now
 import os
 import uuid
 
-# How does this function work?
+class User(AbstractUser):
+    pass
+
 def post_picture_path(instance, filename):
     ext = filename.split('.')[-1]
     new_filename = f"{uuid.uuid4().hex}.{ext}"
@@ -19,23 +21,27 @@ class Task(models.Model):
     def __str__(self):
         return self.title
 
-class User():
-    username = models.TextField()
-
 
 class Post(models.Model):
+    author = models.ForeignKey(User, on_delete=models.CASCADE)
     picture = models.ImageField(upload_to=post_picture_path)
     content = models.TextField()
     time = models.DateTimeField(auto_now_add=True)
     likes = models.ManyToManyField(User, blank=True, related_name='liked')
     pinned = models.BooleanField(default=False)
 
+    def __str__(self):
+        return super().__str__()
+
 
 class Profile(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
+    bio = models.TextField(blank=True, null=True)
     followers = models.ManyToManyField(User, blank=True, related_name="following")
-    liked = models.ManyToManyField(User, blank=True, related_name="Times to be liked")
+    liked = models.ManyToManyField(User, blank=True, related_name="likes")
     
+    def __str__(self):
+        return super().__str__()
 
 class Message(models.Model):
     text = models.TextField()
@@ -43,4 +49,5 @@ class Message(models.Model):
     sender = models.ForeignKey(User, on_delete=models.CASCADE, related_name="sent_message")
     receiver = models.ForeignKey(User, on_delete=models.CASCADE, related_name="received_message")
     
-
+    def __str__(self):
+        return super().__str__()

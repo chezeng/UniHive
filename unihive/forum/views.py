@@ -3,6 +3,17 @@ from django.urls import reverse
 from .models import Task
 from .forms import TaskForm
 
+# Initial page
+def index(request):
+    return render(request, 'forum/index.html')
+
+
+
+
+
+
+# These are CRUD operations for the Task model
+
 # Create a task
 def create_task(request):
     if request.method == "POST":
@@ -12,13 +23,13 @@ def create_task(request):
             return redirect(reverse("create_task"))
     else:
         form = TaskForm()
-    return render(request, "forum/create_task.html", {"form": form})
+    return render(request, "crud/create_task.html", {"form": form})
 
 
 # Retrieve task list
 def task_list(request):
     tasks = Task.objects.all()
-    return render(request, "forum/task_list.html", {"tasks": tasks})
+    return render(request, "crud/task_list.html", {"tasks": tasks})
 
 
 # Update a task
@@ -31,7 +42,7 @@ def update_task(request, pk):
             return redirect("task_list")
     else:
         form = TaskForm(instance=task)
-    return render(request, "forum/update_task.html", {"form": form})
+    return render(request, "crud/update_task.html", {"form": form})
 
 
 # Delete a task
@@ -40,6 +51,6 @@ def delete_task(request, pk):
     if request.method == 'POST':
         task.delete()
         return redirect("task_list")
-    return render(request, 'forum/delete_task.html', {'task': task})
+    return render(request, 'crud/delete_task.html', {'task': task})
 
 

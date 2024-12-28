@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <title>{% block title %}UniHive - UWaterloo Forum{% endblock %}</title>
+        <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    </head>
+    <body>
+        <body class="bg-custom-black min-h-screen flex items-center justify-center">
+            <div id="landing-container" class="text-center opacity-0 transition-opacity duration-1000">
+                <h1 class="text-4xl font-bold text-custom-white mb-8">Welcome to UniHive</h1>
+                <div class="space-y-4">
+                    <button id="look-button" class="w-64 px-4 py-2 bg-custom-white text-custom-black font-semibold rounded-lg shadow-lg transform hover:scale-105 hover:bg-yellow-500 transition duration-300">
+                        Look for Lost Item
+                    </button>
+                    <button id="post-button" class="w-64 px-4 py-2 bg-custom-white text-custom-black font-semibold rounded-lg shadow-lg transform hover:scale-105 hover:bg-yellow-500 transition duration-300">
+                        Post Lost Item
+                    </button>
+                </div>
+            </div>
+        
+            <script>
+                window.addEventListener('DOMContentLoaded', () => {
+                    const container = document.getElementById('landing-container');
+                    setTimeout(() => {
+                        container.classList.remove('opacity-0');
+                        container.classList.add('opacity-100');
+                    }, 100); 
+                });
+        
+                document.getElementById('look-button').addEventListener('click', () => {
+                    window.location.href = '/posts'; 
+                });
+        
+                document.getElementById('post-button').addEventListener('click', () => {
+                    window.location.href = '/create_post'; 
+                });
+            </script>
+        </body>
+    </body>
+</html>
