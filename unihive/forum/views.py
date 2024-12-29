@@ -7,7 +7,8 @@ from .forms import TaskForm
 def index(request):
     return render(request, 'forum/index.html')
 
-
+def home(request):
+    return render(request, 'forum/home.html')
 
 
 
