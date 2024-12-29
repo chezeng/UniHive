@@ -12,15 +12,6 @@ def post_picture_path(instance, filename):
     new_filename = f"{uuid.uuid4().hex}.{ext}"
     return os.path.join('pictures/', new_filename)
 
-class Task(models.Model):
-    title = models.CharField(max_length=200)
-    description = models.TextField()
-    completed = models.BooleanField(default=False)
-    created_at = models.DateTimeField(auto_now_add=True)
-
-    def __str__(self):
-        return self.title
-
 
 class Post(models.Model):
     author = models.ForeignKey(User, on_delete=models.CASCADE)
@@ -43,6 +34,7 @@ class Profile(models.Model):
     def __str__(self):
         return super().__str__()
 
+
 class Message(models.Model):
     text = models.TextField()
     time = models.DateTimeField(default=now)
@@ -51,3 +43,15 @@ class Message(models.Model):
     
     def __str__(self):
         return super().__str__()
+
+
+
+
+class Task(models.Model):
+    title = models.CharField(max_length=200)
+    description = models.TextField()
+    completed = models.BooleanField(default=False)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return self.title

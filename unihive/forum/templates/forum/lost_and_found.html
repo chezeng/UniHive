@@ -1,0 +1,126 @@
+<!-- This is the home page of the forum where all posts are displayed -->
+<!-- The posts are displayed in a card format with the poster's username, category, content, time, and picture -->
+<!DOCTYPE html>
+
+{% extends "forum/navbar.html" %}
+{% load static %}
+
+{% block title %}UniHive - UWaterloo Forum{% endblock %}
+
+{% block body %}
+<div class="container mt-5">
+    <h1 class="text-center">All Posts</h1>
+    {% for type in page_obj %}
+    <div class="card mb-4 shadow-sm">
+        <div class="card-header d-flex justify-content-between align-items-center">
+            <div>
+                <a href="{% url 'view_profile' type.post.poster.username %}">
+                    <b>{{ type.post.poster.username }}</b>
+                </a>
+            </div>
+            <div>
+                {% if type.post.pinned %}
+                    <span class="badge bg-warning text-dark">PINNED</span>
+                {% endif %}
+                <span class="badge bg-info">{{ type.post.category|default:"General" }}</span>
+            </div>
+        </div>
+        <div class="card-body"> 
+            <p class="card-text">{{ type.post.content }}</p>
+
+            <div class="container" style="height: 150px; overflow: hidden; padding: 0;">
+                {% if type.post.picture %}
+                    <img src="{{ type.post.picture.url }}" alt="Post Image" style="max-width: 100%; max-height: 100%;">
+                {% endif %}
+            </div>
+        </div>
+        <div class="card-footer d-flex justify-content-between align-items-center">
+            <div>
+                <span class="text-muted">{{ type.post.time }}</span>
+            </div>
+                <div class="flex items-center space-x-6">
+                    {% if type.is_liked %}
+                        <div class="flex items-center space-x-4">
+                            <a href="#" 
+                            class="unlike-button bg-yellow-500 text-white px-6 py-2 rounded-md shadow-md hover:bg-yellow-600 transition duration-200 flex items-center" 
+                            data-id="{{ type.post.id }}">
+                                Unlike
+                                <span class="ml-2 likes-count" data-id="{{ type.post.id }}">❤️ {{ type.post.likes.count }}</span>
+                            </a>
+                    
+                            <a href="#" 
+                            class="like-button bg-white text-yellow-500 border border-yellow-500 px-6 py-2 rounded-md shadow-md hover:bg-gray-100 transition duration-200 hidden flex items-center" 
+                            data-id="{{ type.post.id }}">
+                                Like
+                                <span class="ml-2 likes-count" data-id="{{ type.post.id }}">❤️ {{ type.post.likes.count }}</span>
+                            </a>
+                        </div>
+                    {% else %}
+                        <div class="flex items-center space-x-4">
+                            <a href="#" 
+                            class="unlike-button bg-yellow-500 text-white px-6 py-2 rounded-md shadow-md hover:bg-yellow-600 transition duration-200 hidden flex items-center" 
+                            data-id="{{ type.post.id }}">
+                                Unlike
+                                <span class="ml-2 likes-count" data-id="{{ type.post.id }}">❤️ {{ type.post.likes.count }}</span>
+                            </a>
+                    
+                            <a href="#" 
+                            class="like-button bg-white text-yellow-500 border border-yellow-500 px-6 py-2 rounded-md shadow-md hover:bg-gray-100 transition duration-200 flex items-center" 
+                            data-id="{{ type.post.id }}">
+                                Like
+                                <span class="ml-2 likes-count" data-id="{{ type.post.id }}">❤️ {{ type.post.likes.count }}</span>
+                            </a>
+                        </div>
+                    {% endif %}
+
+                    <a href="{% url 'postpage' type.post.id %}" class="bg-white text-yellow-500 border border-yellow-500 px-6 py-2 rounded-md shadow-md hover:bg-gray-100 transition duration-200 flex items-center">View post</a>
+                        
+                    <!-- you cannot delete this part for some reason since it will casue the like button to not work
+                    i'm guessing due to the csrf token -->
+                    {% if user.is_authenticated and type.post.poster == user %}
+                        <div class="flex items-center space-x-4" style="display: none;">
+                            <a href="#" class="edit-button bg-white text-yellow-500 border border-yellow-500 px-6 py-2 rounded-md shadow-md hover:bg-gray-100 transition duration-200 flex items-center" data-id="{{ type.post.id }}">Edit</a>
+                        </div>
+                        <div class="edit-space" data-id="{{ type.post.id }}" style="display: none;">
+                            <form>
+                                {% csrf_token %}
+                                <textarea class="text-space" data-id="{{ type.post.id }}"></textarea>
+                                <input type="submit" class="btn btn-primary" value="Save" /> 
+                            </form>
+                        </div>
+                    {% endif %}
+                </div>
+        </div>
+    </div>
+    {% empty %}
+    <p class="text-center">No posts available.</p>
+    {% endfor %}
+
+    <nav aria-label="Page navigation">
+        <ul class="pagination justify-content-center">
+            {% if page_obj.has_previous %}
+            <li class="page-item"><a class="page-link" href="?page=1">&laquo; First</a></li>
+            <li class="page-item"><a class="page-link" href="?page={{ page_obj.previous_page_number }}">Previous</a></li>
+            {% endif %}
+
+            <li class="page-item active"><a class="page-link">{{ page_obj.number }}</a></li>
+
+            {% if page_obj.has_next %}
+            <li class="page-item"><a class="page-link" href="?page={{ page_obj.next_page_number }}">Next</a></li>
+            <li class="page-item"><a class="page-link" href="?page={{ page_obj.paginator.num_pages }}">Last &raquo;</a></li>
+            {% endif %}
+        </ul>
+    </nav>
+    <script src="posts.js?v=1.0"></script>
+</div>
+{% endblock %}
+
+{% block script %}
+
+<script>
+    const savePostUrl = "{% url 'save_post' %}";
+    const likePostUrl = "{% url 'like_post' %}";
+    const unlikePostUrl = "{% url 'unlike_post' %}";
+</script>
+<script src="{% static 'forum/posts.js' %}"></script>
+{% endblock %}

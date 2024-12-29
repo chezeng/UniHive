@@ -1,27 +1,24 @@
+<!DOCTYPE html>
+
 {% load static %}
 
-<!DOCTYPE html>
 <html lang="en">
     <head>
         <title>{% block title %}UniHive - UWaterloo Forum{% endblock %}</title>
-        <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
-        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
-        <link href="{% static 'network/styles.css' %}" rel="stylesheet">
+        <script src="https://cdn.tailwindcss.com"></script>
         <meta name="csrf-token" content="{{ csrf_token }}">
-        
-        {% block script %}
-        {% endblock %}
+    
     </head>
     <body>
         <nav class="bg-black text-white">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div class="flex items-center justify-between h-16">
                     <div class="flex-shrink-0">
-                        <a href="#">
-                            <img src="{% static 'pictures/Logo.png' %}" alt="UniHive Logo" class="h-10">
+                        <a href="/">
+                            <img src="{% static 'media/Logo.png' %}" alt="UniHive Logo" class="h-10">
                         </a>
                     </div>
-        
+
                     <div class="flex lg:hidden">
                         <div class="flex items-center space-x-4">
                             <a href="{% url 'posts' %}" class="px-3 py-2 rounded-md text-sm font-medium hover:text-yellow-500 text-white">Posts</a>
