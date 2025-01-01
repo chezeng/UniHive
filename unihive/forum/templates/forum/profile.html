@@ -1,0 +1,53 @@
+{% extends "forum/navbar.html" %}
+{% load static %}
+
+{% block body %}
+
+<div class="max-w-3xl mx-auto bg-white p-6 rounded-lg shadow-lg">
+    <header class="text-center mb-6">
+        <h1 class="text-3xl font-semibold text-gray-800">{{ profile.user.username }}</h1>
+    </header>
+
+    {% if others_profile and user.is_authenticated %}
+        <div class="text-center mb-6">
+            {% if others_profile_follow %}
+                <form action="{% url 'press_follow' username=profile.user.username %}" method="post">
+                    {% csrf_token %}
+                    <button type="submit" class="px-6 py-2 bg-green-500 text-white rounded-lg shadow-md hover:bg-green-600 focus:outline-none">
+                        Follow
+                    </button>
+                </form>
+            {% else %}
+                <form action="{% url 'press_unfollow' username=profile.user.username %}" method="post">
+                    {% csrf_token %}
+                    <button type="submit" class="px-6 py-2 bg-yellow-500 text-white rounded-lg shadow-md hover:bg-yellow-600 focus:outline-none">
+                        Unfollow
+                    </button>
+                </form>
+            {% endif %}
+        </div>
+    {% endif %}
+
+    <div class="flex justify-around mt-8 pt-6 border-t border-gray-200">
+        <div class="text-center">
+            <strong class="text-2xl text-yellow-500">{{ followers_count }}</strong>
+            <span class="text-sm text-gray-500">Followers</span>
+        </div>
+        <div class="text-center">
+            <strong class="text-2xl text-yellow-500">{{ following_count }}</strong>
+            <span class="text-sm text-gray-500">Following</span>
+        </div>
+    </div>
+
+</div>
+
+{% endblock %}
+
+{% block script %}
+    <script>
+        const savePostUrl = "{% url 'save_post' %}";
+        const likePostUrl = "{% url 'like_post' %}";
+        const unlikePostUrl = "{% url 'unlike_post' %}";
+    </script>
+    <script src="{% static 'forum/profile.js' %}"></script>
+{% endblock %}

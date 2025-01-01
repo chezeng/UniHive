@@ -10,19 +10,19 @@ class User(AbstractUser):
 def post_picture_path(instance, filename):
     ext = filename.split('.')[-1]
     new_filename = f"{uuid.uuid4().hex}.{ext}"
-    return os.path.join('pictures/', new_filename)
+    return os.path.join('pictures', str(instance.poster.id), new_filename)
 
 
 class Post(models.Model):
-    author = models.ForeignKey(User, on_delete=models.CASCADE)
-    picture = models.ImageField(upload_to=post_picture_path)
+    poster = models.ForeignKey(User, on_delete=models.CASCADE)
     content = models.TextField()
     time = models.DateTimeField(auto_now_add=True)
-    likes = models.ManyToManyField(User, blank=True, related_name='liked')
+    likes = models.ManyToManyField(User, blank=True, related_name="liked")
+    found = models.BooleanField(default=False)
+    picture = models.ImageField(upload_to=post_picture_path, blank=True, null=True)
+    latitude = models.FloatField(default=43.4722893)
+    longitude = models.FloatField(default=-80.5474325)  
     pinned = models.BooleanField(default=False)
-
-    def __str__(self):
-        return super().__str__()
 
 
 class Profile(models.Model):
@@ -33,8 +33,8 @@ class Profile(models.Model):
     
     def __str__(self):
         return super().__str__()
-
-
+    
+    
 class Message(models.Model):
     text = models.TextField()
     time = models.DateTimeField(default=now)
@@ -43,6 +43,8 @@ class Message(models.Model):
     
     def __str__(self):
         return super().__str__()
+
+
 
 
 

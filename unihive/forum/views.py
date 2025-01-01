@@ -20,7 +20,7 @@ def lost_and_found(request):
     return render(request, 'forum/lost_and_found.html')
 
 def maps(request):
-    return render(request, "network/maps.html")
+    return render(request, "forum/maps.html")
 
 def posts(request):
     post_list = Post.objects.all().order_by('-pinned', '-time')
@@ -53,15 +53,15 @@ def view_profile(request, username):
 
     user = User.objects.get(username=username)
     
-    if not Network.objects.all().filter(user=user).exists():
-        network = Network(user=user)
-        network.save()
+    if not Profile.objects.all().filter(user=user).exists():
+        profile = Profile(user=user)
+        profile.save()
         
-    network = Network.objects.get(user=user)
-    followers = network.followers
+    profile = Profile.objects.get(user=user)
+    followers = profile.followers
     followers_count = followers.count()
 
-    following = user.following
+    following = profile.following
     following_count = following.count()
 
     others_profile = True
@@ -87,7 +87,7 @@ def view_profile(request, username):
     # page_obj = paginator.get_page(page_number)
 
     return render(request, "forum/profile.html", {
-        "network" : network, 
+        "profile" : profile, 
         "followers_count" : followers_count,
         "following_count" : following_count,
         "others_profile" : others_profile,
@@ -98,9 +98,9 @@ def view_profile(request, username):
 @login_required
 def press_follow(request, username):
     user = User.objects.get(username=username)
-    network = Network.objects.get(user=user)
-    network.followers.add(request.user) # use add instead of append
-    network.save()
+    profile = Profile.objects.get(user=user)
+    profile.followers.add(request.user) # use add instead of append
+    profile.save()
 
     # redirect instead of calling view_profile direct so that the link stays at the profile
     return redirect(reverse('view_profile', args=[username]))
@@ -108,9 +108,9 @@ def press_follow(request, username):
 @login_required
 def press_unfollow(request, username):
     user = User.objects.get(username=username)
-    network = Network.objects.get(user=user)
-    network.followers.remove(request.user)
-    network.save()
+    profile = Profile.objects.get(user=user)
+    profile.followers.remove(request.user)
+    profile.save()
 
     return redirect(reverse('view_profile', args=[username]))
 
@@ -137,7 +137,7 @@ def following(request):
 
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
-    return render(request, 'network/following.html', {'page_obj': page_obj})
+    return render(request, 'forum/following.html', {'page_obj': page_obj})
 
 @require_http_methods(["POST"])
 def save_post(request):
@@ -248,7 +248,7 @@ def postpage(request, post_id):
     post = Post.objects.get(id=post_id)
     is_liked = post.likes.filter(id=request.user.id).exists()
 
-    return render(request, 'network/postpage.html', {
+    return render(request, 'forum/postpage.html', {
         'post' : post,
         'post_id' : post_id,
         'is_liked' : is_liked,
@@ -267,11 +267,11 @@ def login_view(request):
             login(request, user)
             return HttpResponseRedirect(reverse("posts"))
         else:
-            return render(request, "network/login.html", {
+            return render(request, "forum/login.html", {
                 "message": "Invalid username and/or password."
             })
     else:
-        return render(request, "network/login.html")
+        return render(request, "forum/login.html")
 
 def logout_view(request):
     logout(request)
@@ -286,24 +286,24 @@ def register(request):
         password = request.POST["password"]
         confirmation = request.POST["confirmation"]
         if password != confirmation:
-            return render(request, "network/register.html", {
+            return render(request, "forum/register.html", {
                 "message": "Passwords must match."
             })
 
         # Attempt to create new user
         try:
             user = User.objects.create_user(username, email, password)
-            network = Network(user=user)
+            profile = Profile(user=user)
             user.save()
-            network.save()
+            profile.save()
         except IntegrityError:
-            return render(request, "network/register.html", {
+                return render(request, "forum/register.html", {
                 "message": "Username already taken."
             })
         login(request, user)
         return HttpResponseRedirect(reverse("posts"))
     else:
-        return render(request, "network/register.html")
+        return render(request, "forum/register.html")
     
 
 @require_http_methods(["POST"])
@@ -379,11 +379,11 @@ def search(request):
             P = post.content.upper()
             if P.find(search_content) != -1:
                 list.append(post)
-        return render(request, "network/search.html", {
+        return render(request, "forum/search.html", {
             "posts" : list,
         })
     else:
-        return render(request, "network/search.html")
+        return render(request, "forum/search.html")
 
 
 def points(request, post_id):
@@ -422,6 +422,6 @@ def chat(request,username):
         
     texts.sort(key=lambda x: x.time)
 
-    return render(request, "network/chat.html", {
+    return render(request, "forum/chat.html", {
         'texts' : texts,
     })

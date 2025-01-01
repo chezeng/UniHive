@@ -5,88 +5,284 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>{% block title %}UniHive - UWaterloo Forum{% endblock %}</title>
         <script src="https://cdn.tailwindcss.com"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
         <style>
-            @keyframes bg-animation {
-                0% {
-                    background-position: 0% 50%;
-                }
-                50% {
-                    background-position: 100% 50%;
-                }
-                100% {
-                    background-position: 0% 50%;
-                }
-            }
-
-            .bg-custom-black {
+            html, body {
+                margin: 0;
+                padding: 0;
+                width: 100%;
+                height: 100%;
                 background-color: #1d1d1d;
+                overflow: hidden;
             }
 
-            .text-custom-yellow {
-                color: #ffcc00;
+            @keyframes glowPulse {
+                0% { text-shadow: 0 0 10px #ffcc00, 0 0 20px #ffcc00, 0 0 30px #ffcc00; }
+                50% { text-shadow: 0 0 20px #ffcc00, 0 0 30px #ffcc00, 0 0 40px #ffcc00; }
+                100% { text-shadow: 0 0 10px #ffcc00, 0 0 20px #ffcc00, 0 0 30px #ffcc00; }
             }
 
-            .btn-animate {
-                transition: all 0.3s ease;
+            .glitch {
+                position: relative;
+                color: white;
+                overflow: hidden;
             }
 
-            .btn-animate:hover {
-                transform: scale(1.1);
-                background-color: #ffcc00;
-                color: #1d1d1d;
+            .glitch::before,
+            .glitch::after {
+                content: attr(data-text);
+                position: absolute;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                color: white;
+                clip-path: inset(0 0 0 0);
             }
 
-            .bg-gradient {
-                background: linear-gradient(45deg, #ffcc00, #f9f9f9, #ffcc00);
-                background-size: 400% 400%;
-                animation: bg-animation 8s ease infinite;
+            .glitch::before {
+                left: 2px;
+                text-shadow: -2px 0 #ffcc00;
+                animation: glitch-anim 5s infinite linear alternate-reverse;
+            }
+
+            .glitch::after {
+                left: -2px;
+                text-shadow: -2px 0 #ffcc00;
+                animation: glitch-anim 2s infinite linear alternate-reverse;
+            }
+
+            .cyber-button {
+                position: relative;
+                overflow: hidden;
+                transition: all 0.5s;
+                border: 2px solid #ffcc00;
+                background-color: rgba(255, 255, 255, 0.1);
+                color: white !important;
+            }
+
+            .cyber-button::before {
+                content: '';
+                position: absolute;
+                top: 0;
+                left: -100%;
+                width: 100%;
+                height: 100%;
+                background: linear-gradient(
+                    120deg,
+                    transparent,
+                    rgba(255,204,0,0.4),
+                    transparent
+                );
+                transition: 0.5s;
+            }
+
+            .cyber-button:hover::before {
+                left: 100%;
+            }
+
+            .cyber-button:hover {
+                box-shadow: 0 0 20px #ffcc00;
+                text-shadow: 0 0 10px #ffcc00;
+                background-color: rgba(255, 255, 255, 0.2);
+            }
+
+            #matrix-canvas {
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                z-index: 1;
             }
         </style>
     </head>
 
-    <body class="bg-custom-black min-h-screen flex items-center justify-center">
-        <div id="landing-container" class="text-center opacity-0 transition-opacity duration-1000">
-            <div class="absolute inset-0 bg-gradient z-[-1]"></div>
-            
-            <h1 class="text-6xl font-extrabold text-custom-black mb-8">
-                Welcome to <span class="text-custom-yellow">UniHive</span>!
+    <body class="min-h-screen flex items-center justify-center">
+        <canvas id="matrix-canvas"></canvas>
+        
+        <div id="landing-container" class="text-center relative z-10 opacity-0">
+            <h1 id="main-title" class="glitch text-6xl font-extrabold mb-8 text-white" data-text="Welcome to UniHive!">
+                Welcome to UniHive!
             </h1>
-            <h3 class="italic font-bold text-lg mx-10 mb-12 text-custom-black opacity-80">
-                The all-in-one platform for University of Waterloo students.  
+            
+            <h3 id="subtitle" class="italic font-bold text-lg mx-10 mb-12 text-white opacity-0">
+                The all-in-one platform for University of Waterloo students.
             </h3>
 
-            <div class="space-y-8 space-x-4">
-                <button id="home-button" class="btn-animate border-black w-72 px-6 py-3 bg-custom-white text-custom-black font-semibold rounded-xl shadow-2xl hover:shadow-xl">
+            <div class="space-y-8 flex flex-col items-center">
+                <button id="home-button" class="cyber-button w-72 px-6 py-3 font-semibold rounded-xl opacity-0">
                     Home Page
                 </button>
-                <button id="seek-button" class="btn-animate w-72 px-6 py-3 bg-custom-white text-custom-black font-semibold rounded-xl shadow-2xl hover:shadow-xl">
+                <button id="seek-button" class="cyber-button w-72 px-6 py-3 font-semibold rounded-xl opacity-0">
                     Lost and Found
                 </button>
-                <button id="study-button" class="btn-animate w-72 px-6 py-3 bg-custom-white text-custom-black font-semibold rounded-xl shadow-2xl hover:shadow-xl">
+                <button id="study-button" class="cyber-button w-72 px-6 py-3 font-semibold rounded-xl opacity-0">
                     Study Spaces
                 </button>
             </div>
         </div>
 
         <script>
+            // Matrix rain effect
+            const canvas = document.getElementById('matrix-canvas');
+            const ctx = canvas.getContext('2d');
+
+            function resizeCanvas() {
+                canvas.width = window.innerWidth;
+                canvas.height = window.innerHeight;
+            }
+
+            window.addEventListener('resize', resizeCanvas);
+            resizeCanvas();
+
+            const matrix = "ABCDEFGHIJKLMNOPQRSTUVWXYZ123456789@#$%^&*()*&^%";
+            const drops = [];
+            const fontSize = 16;
+            const columns = canvas.width/fontSize;
+
+            for(let x = 0; x < columns; x++) {
+                drops[x] = 1;
+            }
+
+            function drawMatrix() {
+                ctx.fillStyle = 'rgba(29, 29, 29, 0.05)';
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+                
+                ctx.fillStyle = '#ffcc00';
+                ctx.font = fontSize + 'px monospace';
+
+                for(let i = 0; i < drops.length; i++) {
+                    const text = matrix[Math.floor(Math.random()*matrix.length)];
+                    ctx.fillText(text, i*fontSize, drops[i]*fontSize);
+                    
+                    if(drops[i]*fontSize > canvas.height && Math.random() > 0.975)
+                        drops[i] = 0;
+                    
+                    drops[i]++;
+                }
+            }
+
+            // Text scramble effect
+            class TextScramble {
+                constructor(el) {
+                    this.el = el;
+                    this.chars = '!<>-_\\/[]{}—=+*^?#________';
+                    this.update = this.update.bind(this);
+                }
+                
+                setText(newText) {
+                    const oldText = this.el.innerText;
+                    const length = Math.max(oldText.length, newText.length);
+                    const promise = new Promise((resolve) => this.resolve = resolve);
+                    this.queue = [];
+                    for (let i = 0; i < length; i++) {
+                        const from = oldText[i] || '';
+                        const to = newText[i] || '';
+                        const start = Math.floor(Math.random() * 40);
+                        const end = start + Math.floor(Math.random() * 40);
+                        this.queue.push({ from, to, start, end });
+                    }
+                    cancelAnimationFrame(this.frameRequest);
+                    this.frame = 0;
+                    this.update();
+                    return promise;
+                }
+                
+                update() {
+                    let output = '';
+                    let complete = 0;
+                    for (let i = 0, n = this.queue.length; i < n; i++) {
+                        let { from, to, start, end, char } = this.queue[i];
+                        if (this.frame >= end) {
+                            complete++;
+                            output += to;
+                        } else if (this.frame >= start) {
+                            if (!char || Math.random() < 0.28) {
+                                char = this.randomChar();
+                                this.queue[i].char = char;
+                            }
+                            output += char;
+                        } else {
+                            output += from;
+                        }
+                    }
+                    this.el.innerText = output;
+                    if (complete === this.queue.length) {
+                        this.resolve();
+                    } else {
+                        this.frameRequest = requestAnimationFrame(this.update);
+                        this.frame++;
+                    }
+                }
+                
+                randomChar() {
+                    return this.chars[Math.floor(Math.random() * this.chars.length)];
+                }
+            }
+
+            // Initialize animations
             window.addEventListener('DOMContentLoaded', () => {
+                setInterval(drawMatrix, 33);
+
                 const container = document.getElementById('landing-container');
+                container.style.opacity = '1';
+                
+                // Scramble title
+                const title = document.querySelector('#main-title');
+                const subtitle = document.querySelector('#subtitle');
+                const scrambleTitle = new TextScramble(title);
+                const scrambleSubtitle = new TextScramble(subtitle);
+                
+                scrambleTitle.setText('Welcome to UniHive!');
+                
                 setTimeout(() => {
-                    container.classList.remove('opacity-0');
-                    container.classList.add('opacity-100');
-                }, 200); 
+                    subtitle.style.opacity = '1';
+                    scrambleSubtitle.setText('The all-in-one platform for University of Waterloo students.');
+                }, 1000);
+
+                // Animate buttons
+                const buttons = ['#home-button', '#seek-button', '#study-button'];
+                buttons.forEach((btn, i) => {
+                    gsap.to(btn, {
+                        duration: 1,
+                        opacity: 1,
+                        y: 0,
+                        delay: 2 + (i * 0.2),
+                        ease: 'back.out'
+                    });
+                });
             });
 
+            // Button click handlers
             document.getElementById('home-button').addEventListener('click', () => {
-                window.location.href = '/home'; 
+                gsap.to(this, {
+                    duration: 0.2,
+                    scale: 0.95,
+                    yoyo: true,
+                    repeat: 1,
+                    onComplete: () => window.location.href = '/home'
+                });
             });
 
             document.getElementById('seek-button').addEventListener('click', () => {
-                window.location.href = '/lost_and_found'; 
+                gsap.to(this, {
+                    duration: 0.2,
+                    scale: 0.95,
+                    yoyo: true,
+                    repeat: 1,
+                    onComplete: () => window.location.href = '/lost_and_found'
+                });
             });
 
             document.getElementById('study-button').addEventListener('click', () => {
-                window.location.href = '/study_spaces'; 
+                gsap.to(this, {
+                    duration: 0.2,
+                    scale: 0.95,
+                    yoyo: true,
+                    repeat: 1,
+                    onComplete: () => window.location.href = '/study_spaces'
+                });
             });
         </script>
     </body>

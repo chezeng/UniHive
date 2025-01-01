@@ -6,53 +6,127 @@
     <head>
         <title>{% block title %}UniHive - UWaterloo Forum{% endblock %}</title>
         <script src="https://cdn.tailwindcss.com"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
         <meta name="csrf-token" content="{{ csrf_token }}">
+        <style>
+            .nav-link {
+                position: relative;
+                overflow: hidden;
+            }
+            .nav-link::after {
+                content: '';
+                position: absolute;
+                bottom: 0;
+                left: 0;
+                width: 0;
+                height: 2px;
+                background-color: #FCD34D;
+                transition: width 0.3s ease;
+            }
+            .nav-link:hover::after {
+                width: 100%;
+            }
+            .logo-hover {
+                transition: transform 0.3s ease;
+            }
+            .logo-hover:hover {
+                transform: scale(1.1) rotate(5deg);
+            }
+            @keyframes glow {
+                0% { box-shadow: 0 0 5px #FCD34D; }
+                50% { box-shadow: 0 0 20px #FCD34D; }
+                100% { box-shadow: 0 0 5px #FCD34D; }
+            }
+            .auth-button {
+                animation: glow 2s infinite;
+            }
+        </style>
     </head>
     <body> 
-        <nav class="bg-black text-white">
+        <nav class="bg-black text-white shadow-lg transition-all duration-300 hover:shadow-yellow-500/50">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div class="flex items-center justify-between h-16">
                     <div class="flex-shrink-0">
-                        <a href="/">
+                        <a href="/" class="logo-hover inline-block">
                             <img src="{% static 'media/Logo.png' %}" alt="UniHive Logo" class="h-10">
                         </a>
                     </div>
 
                     <div class="flex lg:hidden">
                         <div class="flex items-center space-x-4">
-                            <a href="{% url 'posts' %}" class="px-3 py-2 rounded-md text-sm font-medium hover:text-yellow-500 text-white">Posts</a>
-                            <a href="{% url 'maps' %}" class="px-3 py-2 rounded-md text-sm font-medium hover:text-yellow-500 text-white">Map</a>
+                            <a href="{% url 'posts' %}" class="nav-link px-3 py-2 rounded-md text-sm font-medium hover:text-yellow-500 text-white transition-colors duration-300">Posts</a>
+                            <a href="{% url 'maps' %}" class="nav-link px-3 py-2 rounded-md text-sm font-medium hover:text-yellow-500 text-white transition-colors duration-300">Map</a>
                             {% if user.is_authenticated %}
-                                <a href="{% url 'create_post' %}" class="px-3 py-2 rounded-md text-sm font-medium hover:text-yellow-500 text-white">Create</a>
+                                <a href="{% url 'create_post' %}" class="nav-link px-3 py-2 rounded-md text-sm font-medium hover:text-yellow-500 text-white transition-colors duration-300">Create</a>
                             {% endif %}
                             {% if user.is_authenticated %}
-                                <a href="{% url 'logout' %}" class="px-3 py-2 rounded-md text-sm font-medium hover:text-yellow-500 text-white">Logout</a>
+                                <a href="{% url 'logout' %}" class="nav-link px-3 py-2 rounded-md text-sm font-medium hover:text-yellow-500 text-white transition-colors duration-300">Logout</a>
                             {% else %}
-                                <a href="{% url 'login' %}" class="px-3 py-2 rounded-md text-sm font-medium hover:text-yellow-500 text-white">Sign In</a>
-                                <a href="{% url 'register' %}" class="px-3 py-2 rounded-md text-sm font-medium hover:text-yellow-500 text-white">Register</a>
+                                <a href="{% url 'login' %}" class="auth-button px-3 py-2 rounded-md text-sm font-medium bg-yellow-600 hover:bg-yellow-700 text-white transition-all duration-300">Sign In</a>
+                                <a href="{% url 'register' %}" class="nav-link px-3 py-2 rounded-md text-sm font-medium hover:text-yellow-500 text-white transition-colors duration-300">Register</a>
                             {% endif %}
                         </div>
                     </div>
     
                     <div class="hidden lg:flex lg:items-center lg:space-x-4">
-                        <a href="{% url 'posts' %}" class="px-3 py-2 rounded-md text-sm font-medium hover:text-yellow-500 text-white">Posts</a>
-                        <a href="{% url 'maps' %}" class="px-3 py-2 rounded-md text-sm font-medium hover:text-yellow-500 text-white">Map</a>
+                        <a href="{% url 'posts' %}" class="nav-link px-3 py-2 rounded-md text-sm font-medium hover:text-yellow-500 text-white transition-colors duration-300">Posts</a>
+                        <a href="{% url 'maps' %}" class="nav-link px-3 py-2 rounded-md text-sm font-medium hover:text-yellow-500 text-white transition-colors duration-300">Map</a>
                         {% if user.is_authenticated %}
-                            <a href="{% url 'create_post' %}" class="px-3 py-2 rounded-md text-sm font-medium hover:text-yellow-500 text-white">Create</a>
+                            <a href="{% url 'create_post' %}" class="nav-link px-3 py-2 rounded-md text-sm font-medium hover:text-yellow-500 text-white transition-colors duration-300">Create</a>
                         {% endif %}
-                        <a href="{% url 'following' %}" class="px-3 py-2 rounded-md text-sm font-medium hover:text-yellow-500 text-white">Following</a>
+                        <a href="{% url 'following' %}" class="nav-link px-3 py-2 rounded-md text-sm font-medium hover:text-yellow-500 text-white transition-colors duration-300">Following</a>
                         <a href="https://github.com/chezeng/UniHive" target="_blank" rel="noopener noreferrer"
-                            class="px-3 py-2 rounded-md text-sm font-medium hover:text-yellow-500 text-white">GitHub</a>
+                            class="nav-link px-3 py-2 rounded-md text-sm font-medium hover:text-yellow-500 text-white transition-colors duration-300">GitHub</a>
                         {% if user.is_authenticated %}
-                            <a href="{% url 'logout' %}" class="px-3 py-2 rounded-md text-sm font-medium hover:text-yellow-500 text-white">Logout</a>
+                            <a href="{% url 'logout' %}" class="nav-link px-3 py-2 rounded-md text-sm font-medium hover:text-yellow-500 text-white transition-colors duration-300">Logout</a>
                         {% else %}
-                            <a href="{% url 'login' %}" class="px-3 py-2 rounded-md text-sm font-medium hover:text-yellow-500 text-white">Sign In</a>
-                            <a href="{% url 'register' %}" class="px-3 py-2 rounded-md text-sm font-medium hover:text-yellow-500 text-white">Register</a>
+                            <a href="{% url 'login' %}" class="auth-button px-3 py-2 rounded-md text-sm font-medium bg-yellow-600 hover:bg-yellow-700 text-white transition-all duration-300">Sign In</a>
+                            <a href="{% url 'register' %}" class="nav-link px-3 py-2 rounded-md text-sm font-medium hover:text-yellow-500 text-white transition-colors duration-300">Register</a>
                         {% endif %}
                     </div>
                 </div>
             </div>
         </nav>
+
+        <script>
+            document.addEventListener('DOMContentLoaded', () => {
+                // Animate nav items on page load
+                gsap.from('.nav-link', {
+                    duration: 0.5,
+                    opacity: 0,
+                    y: -20,
+                    stagger: 0.1,
+                    ease: 'power2.out'
+                });
+
+                // Animate logo on page load
+                gsap.from('.logo-hover', {
+                    duration: 1,
+                    rotation: 360,
+                    scale: 0,
+                    ease: 'elastic.out(1, 0.3)'
+                });
+
+                // Hover effect for nav items
+                document.querySelectorAll('.nav-link').forEach(link => {
+                    link.addEventListener('mouseenter', () => {
+                        gsap.to(link, {
+                            duration: 0.3,
+                            scale: 1.1,
+                            ease: 'power1.out'
+                        });
+                    });
+                    
+                    link.addEventListener('mouseleave', () => {
+                        gsap.to(link, {
+                            duration: 0.3,
+                            scale: 1,
+                            ease: 'power1.in'
+                        });
+                    });
+                });
+            });
+        </script>
         
         <div class="body">
             {% block body %}
