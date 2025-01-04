@@ -1,4 +1,4 @@
-from django.urls import path
+from django.urls import include, path, re_path
 from django.conf import settings
 from django.conf.urls.static import static
 
@@ -29,7 +29,14 @@ urlpatterns = [
     path('all_points',views.all_points,name='all_points'),
     path('points/<int:post_id>',views.points,name='points'),
     path('chat', views.chat, name='chat'),
-    path('posts',views.posts, name='posts')
+    path('posts',views.posts, name='posts'),
+    # # TODO: To be deleted
+    # re_path(r'^blog/', include('blog.urls')), # repath -> regex match
+    # re_path(r'^articles/(?P<year>)', views.article_detail),
+    # path('blog/articles/', views.article_list, name='article_list'),
+    # path('blog/articles/create/', views.article_create, name='article_create'),
+    # path('blog/articles/<int:id>/', views.article_detail, name='article_detail'),
+
 ]
 
 if settings.DEBUG:  # Only in development
