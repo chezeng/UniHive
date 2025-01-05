@@ -32,13 +32,19 @@
             .logo-hover:hover {
                 transform: scale(1.1) rotate(5deg);
             }
+            .active-nav-item {
+                animation: glow 2s infinite;
+            }
             @keyframes glow {
                 0% { box-shadow: 0 0 5px #FCD34D; }
                 50% { box-shadow: 0 0 20px #FCD34D; }
                 100% { box-shadow: 0 0 5px #FCD34D; }
             }
-            .auth-button {
-                animation: glow 2s infinite;
+            .mobile-menu {
+                display: none;
+            }
+            .mobile-menu.show {
+                display: block;
             }
         </style>
     </head>
@@ -52,18 +58,28 @@
                         </a>
                     </div>
 
-                    <div class="flex lg:hidden">
-                        <div class="flex items-center space-x-4">
-                            <a href="{% url 'posts' %}" class="nav-link px-3 py-2 rounded-md text-sm font-medium hover:text-yellow-500 text-white transition-colors duration-300">Posts</a>
-                            <a href="{% url 'maps' %}" class="nav-link px-3 py-2 rounded-md text-sm font-medium hover:text-yellow-500 text-white transition-colors duration-300">Map</a>
+                    <div class="lg:hidden">
+                        <button id="mobile-menu-button" class="text-white hover:text-yellow-500 focus:outline-none">
+                            <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
+                            </svg>
+                        </button>
+                    </div>
+
+                    <div id="mobile-menu" class="mobile-menu absolute top-16 left-0 w-full bg-black z-50">
+                        <div class="px-10 pt-2 pb-3 space-y-1">
+                            <a href="{% url 'posts' %}" class="nav-link block px-3 py-2 rounded-md text-sm font-medium hover:text-yellow-500 text-white transition-colors duration-300">Posts</a>
+                            <a href="{% url 'maps' %}" class="nav-link block px-3 py-2 rounded-md text-sm font-medium hover:text-yellow-500 text-white transition-colors duration-300">Map</a>
                             {% if user.is_authenticated %}
-                                <a href="{% url 'create_post' %}" class="nav-link px-3 py-2 rounded-md text-sm font-medium hover:text-yellow-500 text-white transition-colors duration-300">Create</a>
+                                <a href="{% url 'create_post' %}" class="nav-link block px-3 py-2 rounded-md text-sm font-medium hover:text-yellow-500 text-white transition-colors duration-300">Create</a>
                             {% endif %}
+                            <a href="{% url 'following' %}" class="nav-link block px-3 py-2 rounded-md text-sm font-medium hover:text-yellow-500 text-white transition-colors duration-300">Following</a>
+                            <a href="https://github.com/chezeng/UniHive" target="_blank" rel="noopener noreferrer" class="nav-link block px-3 py-2 rounded-md text-sm font-medium hover:text-yellow-500 text-white transition-colors duration-300">GitHub</a>
                             {% if user.is_authenticated %}
-                                <a href="{% url 'logout' %}" class="nav-link px-3 py-2 rounded-md text-sm font-medium hover:text-yellow-500 text-white transition-colors duration-300">Logout</a>
+                                <a href="{% url 'logout' %}" class="nav-link block px-3 py-2 rounded-md text-sm font-medium hover:text-yellow-500 text-white transition-colors duration-300">Logout</a>
                             {% else %}
-                                <a href="{% url 'login' %}" class="auth-button px-3 py-2 rounded-md text-sm font-medium bg-yellow-600 hover:bg-yellow-700 text-white transition-all duration-300">Sign In</a>
-                                <a href="{% url 'register' %}" class="nav-link px-3 py-2 rounded-md text-sm font-medium hover:text-yellow-500 text-white transition-colors duration-300">Register</a>
+                                <a href="{% url 'login' %}" class="nav-link block px-3 py-2 rounded-md text-sm font-medium hover:text-yellow-500 text-white transition-colors duration-300">Sign In</a>
+                                <a href="{% url 'register' %}" class="nav-link block px-3 py-2 rounded-md text-sm font-medium hover:text-yellow-500 text-white transition-colors duration-300">Register</a>
                             {% endif %}
                         </div>
                     </div>
@@ -80,7 +96,7 @@
                         {% if user.is_authenticated %}
                             <a href="{% url 'logout' %}" class="nav-link px-3 py-2 rounded-md text-sm font-medium hover:text-yellow-500 text-white transition-colors duration-300">Logout</a>
                         {% else %}
-                            <a href="{% url 'login' %}" class="auth-button px-3 py-2 rounded-md text-sm font-medium bg-yellow-600 hover:bg-yellow-700 text-white transition-all duration-300">Sign In</a>
+                            <a href="{% url 'login' %}" class="nav-link px-3 py-2 rounded-md text-sm font-medium hover:text-yellow-500 text-white transition-colors duration-300">Sign In</a>
                             <a href="{% url 'register' %}" class="nav-link px-3 py-2 rounded-md text-sm font-medium hover:text-yellow-500 text-white transition-colors duration-300">Register</a>
                         {% endif %}
                     </div>
@@ -90,6 +106,21 @@
 
         <script>
             document.addEventListener('DOMContentLoaded', () => {
+                // Mobile menu toggle
+                const mobileMenuButton = document.getElementById('mobile-menu-button');
+                const mobileMenu = document.getElementById('mobile-menu');
+                
+                mobileMenuButton.addEventListener('click', () => {
+                    mobileMenu.classList.toggle('show');
+                    gsap.from('.mobile-menu.show .nav-link', {
+                        duration: 0.3,
+                        opacity: 0,
+                        x: -10,
+                        stagger: 0.1,
+                        ease: 'power2.out'
+                    });
+                });
+
                 // Animate nav items on page load
                 gsap.from('.nav-link', {
                     duration: 0.5,
@@ -124,6 +155,14 @@
                             ease: 'power1.in'
                         });
                     });
+                });
+
+                // Add active class to current page nav item
+                const currentPath = window.location.pathname;
+                document.querySelectorAll('.nav-link').forEach(link => {
+                    if (link.getAttribute('href') === currentPath) {
+                        link.classList.add('active-nav-item');
+                    }
                 });
             });
         </script>
